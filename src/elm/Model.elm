@@ -2,6 +2,7 @@ module Model exposing (..)
 
 import Date exposing (Date)
 import Dict exposing (Dict)
+import Json.Encode as JE
 import Material
 import Material.Snackbar as Snackbar
 import Time exposing (Time)
@@ -92,6 +93,7 @@ type Placement
 type PostStatus
     = NotPublished
     | Published
+    | PublishedButChanged
 
 
 {-| What is passed into the Elm app at application start.
@@ -101,6 +103,7 @@ type alias Flags =
     , authors : List Author
     , nextIds : NextIds
     , defaultAuthor : Maybe Id
+    , posts : JE.Value
     }
 
 

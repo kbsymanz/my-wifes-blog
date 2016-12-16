@@ -250,6 +250,27 @@ update msg model =
             in
                 { model | posts = newPosts } ! []
 
+        SavePost ->
+            let
+                -- Get the default author id or zero if not found.
+                defaultAuthorId =
+                    case model.defaultAuthor of
+                        Just id ->
+                            id
+
+                        Nothing ->
+                            0
+
+                -- Updates the model with the author id.
+                newPosts =
+                    Zipper.mapCurrent (\p -> { p | authorId = defaultAuthorId })
+                        model.posts
+
+                post =
+                    Zipper.current newPosts
+            in
+                -- Save to state and disk.
+                { model | posts = newPosts } ! [ Ports.savePost <| Encoders.postToValue post ]
 
 
 addToast : String -> Model -> ( Model, Cmd Msg )

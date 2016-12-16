@@ -1,14 +1,15 @@
 module Encoders exposing (..)
 
 
+import Date
 import Json.Encode as JE
 
 
 
 -- LOCAL IMPORTS
 
-import Model exposing (Config, Author, NextIds, Id)
-
+import Model exposing (Config, Author, NextIds, Id, Post)
+import Utils as U
 
 
 configToValue : Config -> JE.Value
@@ -58,3 +59,18 @@ defaultAuthorToValue defaultAuthor =
 
         Nothing ->
             JE.null
+
+
+postToValue : Post -> JE.Value
+postToValue post =
+    JE.object
+        [ ( "id", JE.int post.id )
+        , ( "title", JE.string post.title )
+        , ( "cDate", JE.float <| Date.toTime post.cDate )
+        , ( "mDate", JE.float <| Date.toTime post.mDate )
+        , ( "body", JE.string post.body )
+        , ( "authorId", JE.int post.authorId )
+        , ( "tags", JE.string post.tags )
+        , ( "status", JE.string (U.postStatusToString post.status) )
+        , ( "images", JE.list <| List.map (\i -> JE.int i) post.images )
+        ]

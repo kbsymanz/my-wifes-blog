@@ -39,6 +39,45 @@ const getDefaultAuthor = () => {
   return null;
 };
 
+const postKey = (id) => {
+  return "POST " + id;
+};
+
+const getPostKeys = () => {
+  var postsStr = localStorage.getItem('posts');
+  if (! postsStr) postsStr = "[]";
+  var posts = JSON.parse(postsStr);
+  return posts;
+};
+
+const savePost = (post) => {
+  // Save the post in a key where we can find it.
+  var key = postKey(post.id);
+  localStorage.setItem(key, JSON.stringify(post));
+
+  // Get the array of post ids we already have, if any.
+  var posts = getPostKeys();
+
+  // Add this post to the array if necessary and save.
+  if (posts.indexOf(post.id) == -1) posts.push(post.id);
+  localStorage.setItem('posts', JSON.stringify(posts));
+};
+
+const getPosts = () => {
+  // Get the posts that we need to return.
+  var posts = getPostKeys();
+
+  // Get a list of posts to return.
+  var postsList = posts.map(function(id) {
+    const key = postKey(id);
+    const postStr = localStorage.getItem(key);
+    const post = JSON.parse(postStr);
+    return post;
+  });
+
+  return postsList;
+};
+
 module.exports = {
   getConfig: getConfig,
   saveConfig: saveConfig,
@@ -47,5 +86,7 @@ module.exports = {
   getNextIds: getNextIds,
   saveNextIds: saveNextIds,
   getDefaultAuthor: getDefaultAuthor,
-  saveDefaultAuthor: saveDefaultAuthor
+  saveDefaultAuthor: saveDefaultAuthor,
+  savePost: savePost,
+  getPosts: getPosts
 };

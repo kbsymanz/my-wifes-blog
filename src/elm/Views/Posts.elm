@@ -55,25 +55,17 @@ view model =
 postForm : Post -> Model -> Html Msg
 postForm post model =
     let
-        -- TODO: do not allow to save if authorId is Nothing.
-        -- TODO: on save, assume that authorId is defaultAuthor.
         ( authorName, authorId ) =
-            case model.defaultAuthor of
-                Just id ->
-                    case Dict.get id model.authors of
-                        Just a ->
-                            ( a.firstname ++ " " ++ a.lastname, Just id)
-
-                        Nothing ->
-                            ( "Not Found", Nothing)
-
+            case Dict.get post.authorId model.authors of
+                Just a ->
+                  ( a.firstname ++ " " ++ a.lastname, Just post.authorId )
                 Nothing ->
-                    ( "Not Set", Nothing)
+                    ( "Not Found", Nothing )
     in
         Html.div []
             [ Html.text <| "Id: " ++ (toString post.id)
             , Html.br [] []
-            , Html.text <| "Author: " ++ authorName ++ " (set a different default author to change)"
+            , Html.text <| "Author: " ++ authorName ++ " (set a different default author and save to change)"
             , Html.br [] []
             , U.textfieldString model.mdl
                 [ postsContext, 0 ]
@@ -103,7 +95,7 @@ saveBtn model =
         model.mdl
         [ Button.raised
         , Button.ripple
-          --, Button.onClick SaveAuthors
+        , Button.onClick SavePost
         , Options.css "margin-left" "30px"
         ]
         [ Html.text "Save" ]

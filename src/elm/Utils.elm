@@ -10,7 +10,7 @@ import Material.Textfield as Textfield
 
 -- LOCAL IMPORTS
 
-import Model exposing (Mdl, Id, Author)
+import Model exposing (Mdl, Id, Author, PostStatus(..))
 import Msg exposing (..)
 
 
@@ -111,3 +111,35 @@ textfieldString mdl context lbl strVal msg =
 authorsFromList : List Author -> Dict Id Author
 authorsFromList authors =
     Dict.fromList <| List.map (\a -> ( a.id, a )) authors
+
+
+postStatusToString : PostStatus -> String
+postStatusToString status =
+    case status of
+        NotPublished ->
+            "NotPublised"
+
+        Published ->
+            "Published"
+
+        PublishedButChanged ->
+            "PublishedButChanged"
+
+
+stringToPostStatus : String -> PostStatus
+stringToPostStatus str =
+    case str of
+        "NotPublished" ->
+            NotPublished
+        "Published" ->
+            Published
+        "PublishedButChanged" ->
+            PublishedButChanged
+        _ ->
+            let
+                _ =
+                    Debug.log "stringToPostStatus" <| "Error: unknown value passed: " ++ str
+            in
+                Published
+
+

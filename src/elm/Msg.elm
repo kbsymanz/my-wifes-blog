@@ -36,3 +36,4 @@ type Msg
     | PostTitle String
     | PostBody String
     | PostTags String
+    | SavePost
