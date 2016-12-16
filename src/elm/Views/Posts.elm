@@ -1,5 +1,6 @@
 module Views.Posts exposing (view)
 
+import Dict exposing (Dict)
 import Html exposing (Html)
 import List.Zipper as Zipper
 import Material
@@ -54,11 +55,25 @@ view model =
 postForm : Post -> Model -> Html Msg
 postForm post model =
     let
-        _ =
-            Debug.log "postForm" "sfsd"
+        -- TODO: do not allow to save if authorId is Nothing.
+        -- TODO: on save, assume that authorId is defaultAuthor.
+        ( authorName, authorId ) =
+            case model.defaultAuthor of
+                Just id ->
+                    case Dict.get id model.authors of
+                        Just a ->
+                            ( a.firstname ++ " " ++ a.lastname, Just id)
+
+                        Nothing ->
+                            ( "Not Found", Nothing)
+
+                Nothing ->
+                    ( "Not Set", Nothing)
     in
         Html.div []
             [ Html.text <| "Id: " ++ (toString post.id)
+            , Html.br [] []
+            , Html.text <| "Author: " ++ authorName ++ " (set a different default author to change)"
             , Html.br [] []
             , U.textfieldString model.mdl
                 [ postsContext, 0 ]
