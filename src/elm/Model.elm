@@ -32,15 +32,16 @@ type alias Post =
     , authorId : Id
     , tags : String
     , status : PostStatus
-    , state : PostState
     , images : List Id
     }
+
 
 type alias NextIds =
     { nextAuthorId : Id
     , nextPostId : Id
     , nextImageId : Id
     }
+
 
 {-| Image structure that application tracks and saves to disk.
 
@@ -78,17 +79,11 @@ type ViewContent
     | ViewAuthor
     | ViewSettings
 
+
 type Placement
     = Left
     | Center
     | Right
-
-
-{-| Are we editing this post or viewing it?
--}
-type PostState
-    = Editing
-    | Viewing
 
 
 {-| Is this post published or not?
@@ -105,6 +100,7 @@ type alias Flags =
     , authors : List Author
     , nextIds : NextIds
     }
+
 
 {-| Configuration settings. Allow the user to control them.
 These settings will need to be saved in the app database.
@@ -134,10 +130,10 @@ type alias Config =
     { serverImagesPullCmd : String
     , serverImagesPushCmd : String
     , serverPostsPullCmd : String
-    , serverPostsPushCmd: String
+    , serverPostsPushCmd : String
     , serverTriggerCmd : String
     , postsDirectory : String
-    , imagesDirectory: String
+    , imagesDirectory : String
     , postCss : String
     , postTemplate : String
     }
@@ -189,7 +185,7 @@ model =
 
             Nothing ->
                 Zipper.singleton emptyImage
-    , authors = Dict.fromList <| List.map (\a -> (a.id, a)) authors
+    , authors = Dict.fromList <| List.map (\a -> ( a.id, a )) authors
     , currentAuthor = 0
     , viewContent = ViewPost
     , isSyncing = False
@@ -200,12 +196,14 @@ model =
     , nextIds = nextIds
     }
 
+
 nextIds : NextIds
 nextIds =
     { nextAuthorId = 0
     , nextPostId = 0
     , nextImageId = 0
     }
+
 
 posts : List Post
 posts =
@@ -217,7 +215,6 @@ posts =
       , authorId = 0
       , tags = ""
       , status = NotPublished
-      , state = Viewing
       , images = []
       }
     , { id = -2
@@ -228,30 +225,31 @@ posts =
       , authorId = 1
       , tags = ""
       , status = NotPublished
-      , state = Viewing
       , images = []
       }
     ]
 
+
 images : List Image
 images =
     [ { id = 1
-      , originalFile  = ""
-      , placeholderId  = 1
-      , width  = 1
-      , height  = 1
-      , subtext  = ""
+      , originalFile = ""
+      , placeholderId = 1
+      , width = 1
+      , height = 1
+      , subtext = ""
       , placement = Center
       }
     , { id = 2
-      , originalFile  = ""
-      , placeholderId  = 2
-      , width  = 1
-      , height  = 1
-      , subtext  = ""
+      , originalFile = ""
+      , placeholderId = 2
+      , width = 1
+      , height = 1
+      , subtext = ""
       , placement = Center
       }
     ]
+
 
 emptyPost : Post
 emptyPost =
@@ -263,20 +261,21 @@ emptyPost =
     , authorId = -1
     , tags = ""
     , status = NotPublished
-    , state = Viewing
     , images = []
     }
+
 
 emptyImage : Image
 emptyImage =
     { id = 0
-    , originalFile  = ""
-    , placeholderId  = 0
-    , width  = 1
-    , height  = 1
-    , subtext  = ""
+    , originalFile = ""
+    , placeholderId = 0
+    , width = 1
+    , height = 1
+    , subtext = ""
     , placement = Center
     }
+
 
 authors : List Author
 authors =
