@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="stylesheet" href="../css/fonts.css">
+    <link rel="stylesheet" href="../../vendor/mdl-themes/material.lightgreen-deeppurple.min.css">
+    <title>Markdown Manager</title>
+    <script>
+      window.Elm = require('../../dist/elmapp.js');
+    </script>
+  </head>
+  <body>
+    <div id='app'></div>
+    <script>
+      var client = require('./client');
+      var config = client.getConfig();
+      var authors = client.getAuthors();
+      var nextIds = client.getNextIds();
+      var node = document.getElementById('app');
+      var app = Elm.Main.embed(node, {
+        config: config,
+        authors: authors,
+        nextIds: nextIds
+      });
+
+      app.ports.saveConfig.subscribe(function(cfg) {
+        console.log(cfg);
+        client.saveConfig(cfg);
+      });
+
+      app.ports.saveAuthors.subscribe(function(authors) {
+        client.saveAuthors(authors);
+      });
+
+      app.ports.saveNextIds.subscribe(function(nextIds) {
+        client.saveNextIds(nextIds);
+      });
+    </script>
+  </body>
+</html>
