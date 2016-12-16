@@ -13,6 +13,7 @@ type alias Model =
     , images : Zipper Image
     , authors : Dict Id Author
     , currentAuthor : Id
+    , defaultAuthor : Maybe Id
     , viewContent : ViewContent
     , isSyncing : Bool
     , config : Config
@@ -99,6 +100,7 @@ type alias Flags =
     { config : Config
     , authors : List Author
     , nextIds : NextIds
+    , defaultAuthor : Maybe Id
     }
 
 
@@ -187,6 +189,7 @@ model =
                 Zipper.singleton emptyImage
     , authors = Dict.fromList <| List.map (\a -> ( a.id, a )) authors
     , currentAuthor = 0
+    , defaultAuthor = Nothing
     , viewContent = ViewPost
     , isSyncing = False
     , config = config

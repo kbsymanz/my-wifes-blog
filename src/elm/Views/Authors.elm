@@ -1,6 +1,5 @@
 module Views.Authors exposing (view, viewAuthorsList)
 
-
 import Dict exposing (Dict)
 import Html exposing (Html)
 import Html.Attributes as HA
@@ -13,6 +12,7 @@ import Material.Grid as Grid
 import Material.Layout as Layout
 import Material.Options as Options
 import Material.Textfield as Textfield
+import Material.Toggles as Toggles
 import Material.Typography as Typo
 
 
@@ -21,6 +21,7 @@ import Material.Typography as Typo
 import Model exposing (..)
 import Msg exposing (..)
 import Utils as U
+
 
 authorsContext : Int
 authorsContext =
@@ -34,7 +35,7 @@ view model =
             --LE.find (\a -> a.id == model.currentAuthor) model.authors
             Dict.get model.currentAuthor model.authors
 
-        (fname, lname) =
+        ( fname, lname ) =
             case author of
                 Just a ->
                     ( a.firstname, a.lastname )
@@ -57,8 +58,8 @@ view model =
                         ]
                     ]
                 , authorForm author model
-                , Html.p []
-                    [ Html.text <| toString model ]
+                  --, Html.p []
+                  --[ Html.text <| toString model ]
                 ]
             ]
 
@@ -92,16 +93,41 @@ deleteBtn model =
 authorForm : Maybe Author -> Model -> Html Msg
 authorForm author model =
     let
-        (id, firstname, lastname, email) =
+        ( id, firstname, lastname, email ) =
             case author of
                 Just a ->
-                    (a.id, a.firstname, a.lastname, a.email)
+                    ( a.id, a.firstname, a.lastname, a.email )
 
                 Nothing ->
-                    (-100,"","","")
+                    ( -100, "", "", "" )
+
+        defaultAuthorMsg =
+            if model.defaultAuthor == Nothing then
+                SetDefaultAuthor (Just id)
+            else if model.defaultAuthor == Just id then
+                SetDefaultAuthor Nothing
+            else
+                SetDefaultAuthor (Just id)
     in
         Html.div []
-            [ Html.text <| "Id: " ++ if author == Nothing then "" else (toString id)
+            [ Html.text
+                <| "Id: "
+                ++ if author == Nothing then
+                    ""
+                   else
+                    (toString id)
+            , Toggles.checkbox Mdl
+                [ authorsContext, 10 ]
+                model.mdl
+                [ Toggles.onClick defaultAuthorMsg
+                , Toggles.ripple
+                , Toggles.value (model.defaultAuthor == Just id)
+                , if author == Nothing then
+                    Options.disabled True
+                  else
+                    Options.disabled False
+                ]
+                [ Html.text "Make the default author" ]
             , Html.br [] []
             , U.textfieldString model.mdl
                 [ authorsContext, 0 ]
@@ -172,5 +198,3 @@ newBtn model =
         , Options.css "margin-left" "30px"
         ]
         [ Html.text "New" ]
-
-

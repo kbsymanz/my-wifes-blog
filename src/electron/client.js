@@ -29,11 +29,23 @@ const getNextIds = () => {
   return {};
 };
 
+const saveDefaultAuthor = (defaultAuthor) => {
+  localStorage.setItem('defaultAuthor', JSON.stringify(defaultAuthor));
+};
+
+const getDefaultAuthor = () => {
+  var defaultAuthor = localStorage.getItem('defaultAuthor');
+  if (defaultAuthor) return JSON.parse(defaultAuthor);
+  return null;
+};
+
 module.exports = {
   getConfig: getConfig,
   saveConfig: saveConfig,
   getAuthors: getAuthors,
   saveAuthors: saveAuthors,
   getNextIds: getNextIds,
-  saveNextIds: saveNextIds
+  saveNextIds: saveNextIds,
+  getDefaultAuthor: getDefaultAuthor,
+  saveDefaultAuthor: saveDefaultAuthor
 };

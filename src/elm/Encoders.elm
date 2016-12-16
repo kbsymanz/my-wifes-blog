@@ -7,7 +7,7 @@ import Json.Encode as JE
 
 -- LOCAL IMPORTS
 
-import Model exposing (Config, Author, NextIds)
+import Model exposing (Config, Author, NextIds, Id)
 
 
 
@@ -48,3 +48,13 @@ nextIdsToValue nextIds =
         , ( "nextPostId", JE.int nextIds.nextPostId )
         , ( "nextImageId", JE.int nextIds.nextImageId )
         ]
+
+
+defaultAuthorToValue : Maybe Id -> JE.Value
+defaultAuthorToValue defaultAuthor =
+    case defaultAuthor of
+        Just a ->
+            JE.int a
+
+        Nothing ->
+            JE.null

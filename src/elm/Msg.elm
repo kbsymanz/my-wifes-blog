@@ -31,6 +31,7 @@ type Msg
     | SaveAuthors
     | NewAuthor
     | DelAuthor Int
+    | SetDefaultAuthor (Maybe Int)
       -- Posts.
     | PostTitle String
     | PostBody String

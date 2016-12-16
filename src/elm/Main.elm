@@ -36,6 +36,7 @@ init flags =
             | config = flags.config
             , authors = U.authorsFromList flags.authors
             , nextIds = flags.nextIds
+            , defaultAuthor = flags.defaultAuthor
           }
         , Layout.sub0 Mdl
         )

@@ -17,3 +17,4 @@ port saveAuthors : JE.Value -> Cmd msg
 
 port saveNextIds : JE.Value -> Cmd msg
 
+port saveDefaultAuthor : JE.Value -> Cmd msg

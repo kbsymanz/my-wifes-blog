@@ -205,6 +205,9 @@ update msg model =
                     _ ->
                         newModel ! [ newCmd ]
 
+        SetDefaultAuthor maybeId ->
+            { model | defaultAuthor = maybeId } ! [ Ports.saveDefaultAuthor <| Encoders.defaultAuthorToValue maybeId ]
+
         PostTitle title ->
             let
                 newPosts =

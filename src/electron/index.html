@@ -17,11 +17,13 @@
       var config = client.getConfig();
       var authors = client.getAuthors();
       var nextIds = client.getNextIds();
+      var defaultAuthor = client.getDefaultAuthor();
       var node = document.getElementById('app');
       var app = Elm.Main.embed(node, {
         config: config,
         authors: authors,
-        nextIds: nextIds
+        nextIds: nextIds,
+        defaultAuthor: defaultAuthor
       });
 
       app.ports.saveConfig.subscribe(function(cfg) {
@@ -35,6 +37,10 @@
 
       app.ports.saveNextIds.subscribe(function(nextIds) {
         client.saveNextIds(nextIds);
+      });
+
+      app.ports.saveDefaultAuthor.subscribe(function(defaultAuthor) {
+        client.saveDefaultAuthor(defaultAuthor);
       });
     </script>
   </body>
