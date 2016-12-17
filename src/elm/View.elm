@@ -1,12 +1,9 @@
 module View exposing (view)
 
 import Color
-import Date
 import Html exposing (Html)
-import Html.Attributes as HA
 import Html.Events as HE
 import List.Extra as LE
-import List.Zipper as Zipper exposing (Zipper)
 import Material
 import Material.Card as Card
 import Material.Grid as Grid
@@ -52,8 +49,7 @@ headerSmall title model =
                 [ Layout.title []
                     [ Options.styled Html.p [ Typo.headline ] [ Html.text title ] ]
                 , Layout.spacer
-                , Html.div
-                    [ HE.onClick <| SelectSettings ]
+                , Html.div [ HE.onClick <| SelectSettings ]
                     [ settings Color.white 40 ]
                 ]
             ]
@@ -66,68 +62,11 @@ postsAuthorsList model =
     let
         contents =
             Html.div []
-                [ postsList model
+                [ VPosts.viewPostsList model
                 , VAuthors.viewAuthorsList model
                 ]
     in
         contents
-
-
-postsList : Model -> Html Msg
-postsList model =
-    let
-        posts =
-            Zipper.toList model.posts
-
-        buildRow post =
-            let
-                mDate =
-                    (U.monthToString <| Date.month post.mDate)
-                        ++ " "
-                        ++ (String.padLeft 2 '0' <| toString <| Date.day post.mDate)
-                        ++ ", "
-                        ++ (toString <| Date.year post.mDate)
-            in
-                Layout.row []
-                    [ Layout.title []
-                        [ Card.view
-                            [ Options.attribute <| HE.onClick <| SelectPost post.id
-                            ]
-                            [ Card.title []
-                                [ Card.head []
-                                    [ Html.text post.title
-                                    ]
-                                , Card.subhead []
-                                    [ Html.text mDate
-                                    ]
-                                ]
-                            ]
-                        ]
-                    ]
-    in
-        Html.div
-            [ HA.style
-                [ ( "height", "75%" )
-                , ( "min-height", "75%" )
-                , ( "scroll-y", "auto" )
-                ]
-            ]
-            <| [ Layout.row []
-                    [ Layout.title []
-                        [ Options.styled Html.p [ Typo.display2 ] [ Html.text "Posts" ] ]
-                    ]
-               ]
-            ++ List.map buildRow posts
-
-
-
-viewContentPost : Model -> Html Msg
-viewContentPost model =
-    let
-        cPost =
-            Zipper.current model.posts
-    in
-        Html.text <| cPost.title
 
 
 viewContent : Model -> Html Msg

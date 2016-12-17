@@ -2,7 +2,6 @@ module Main exposing (..)
 
 import Dict exposing (Dict)
 import Html
-import List.Zipper as Zipper
 import Material
 import Material.Layout as Layout
 import Time
@@ -40,8 +39,8 @@ init flags =
             , nextIds = flags.nextIds
             , defaultAuthor = flags.defaultAuthor
             , posts = Decoders.decodePosts flags.posts
-                |> Zipper.fromList
-                |> Zipper.withDefault emptyPost
+                |> List.map (\p -> (p.id, p))
+                |> Dict.fromList
           }
         , Layout.sub0 Mdl
         )

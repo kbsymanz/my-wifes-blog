@@ -6,14 +6,14 @@ import Json.Encode as JE
 import Material
 import Material.Snackbar as Snackbar
 import Time exposing (Time)
-import List.Zipper as Zipper exposing (Zipper)
 
 
 type alias Model =
-    { posts : Zipper Post
-    , images : Zipper Image
+    { posts : Dict Id Post
+    , images : Dict Id Image
     , authors : Dict Id Author
     , currentAuthor : Id
+    , currentPost : Id
     , defaultAuthor : Maybe Id
     , viewContent : ViewContent
     , isSyncing : Bool
@@ -176,22 +176,11 @@ config =
 
 model : Model
 model =
-    { posts =
-        case Zipper.fromList posts of
-            Just p ->
-                p
-
-            Nothing ->
-                Zipper.singleton emptyPost
-    , images =
-        case Zipper.fromList images of
-            Just i ->
-                i
-
-            Nothing ->
-                Zipper.singleton emptyImage
-    , authors = Dict.fromList <| List.map (\a -> ( a.id, a )) authors
+    { posts = Dict.fromList [ (emptyPost.id, emptyPost) ]
+    , images = Dict.fromList [ (emptyImage.id, emptyImage) ]
+    , authors = Dict.fromList [ (emptyAuthor.id, emptyAuthor) ]
     , currentAuthor = 0
+    , currentPost = 0
     , defaultAuthor = Nothing
     , viewContent = ViewPost
     , isSyncing = False
@@ -211,55 +200,10 @@ nextIds =
     }
 
 
-posts : List Post
-posts =
-    [ { id = -1
-      , title = "This is a test post"
-      , cDate = Date.fromTime 0
-      , mDate = Date.fromTime 0
-      , body = "If this had been an actual post ..."
-      , authorId = 0
-      , tags = ""
-      , status = NotPublished
-      , images = []
-      }
-    , { id = -2
-      , title = "This is another test post"
-      , cDate = Date.fromTime (1000 * 60 * 60 * 24)
-      , mDate = Date.fromTime (1000 * 60 * 60 * 24)
-      , body = "If this had been an actual post ..."
-      , authorId = 1
-      , tags = ""
-      , status = NotPublished
-      , images = []
-      }
-    ]
-
-
-images : List Image
-images =
-    [ { id = 1
-      , originalFile = ""
-      , placeholderId = 1
-      , width = 1
-      , height = 1
-      , subtext = ""
-      , placement = Center
-      }
-    , { id = 2
-      , originalFile = ""
-      , placeholderId = 2
-      , width = 1
-      , height = 1
-      , subtext = ""
-      , placement = Center
-      }
-    ]
-
 
 emptyPost : Post
 emptyPost =
-    { id = -100
+    { id = 0
     , title = ""
     , cDate = Date.fromTime 0
     , mDate = Date.fromTime 0
@@ -283,17 +227,9 @@ emptyImage =
     }
 
 
-authors : List Author
-authors =
-    [ author
-    , { id = 0, firstname = "Beth", lastname = "Symanzik", email = "beth@kbsymanzik.org" }
-    , { id = 1, firstname = "Kurt", lastname = "Symanzik", email = "kurt@kbsymanzik.org" }
-    ]
-
-
-author : Author
-author =
-    { id = -1
+emptyAuthor : Author
+emptyAuthor =
+    { id = 0
     , firstname = "John"
     , lastname = "Doe"
     , email = "john.dow@example.com"

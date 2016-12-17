@@ -5,14 +5,13 @@ import Dict exposing (Dict)
 import Material
 import Material.Snackbar as Snackbar
 import List.Extra as LE
-import List.Zipper as Zipper
 import Task
 
 
 -- LOCAL IMPORTS
 
 import Encoders
-import Model exposing (Model, Author, Id, NextIds, ViewContent(..))
+import Model exposing (Model, Author, Post, Id, NextIds, ViewContent(..), PostStatus(..))
 import Msg exposing (Msg(..))
 import Ports
 
@@ -34,16 +33,7 @@ update msg model =
             { model | currentTime = time } ! []
 
         SelectPost id ->
-            let
-                newPosts =
-                    case Zipper.find (\p -> p.id == id) (Zipper.first model.posts) of
-                        Just posts ->
-                            posts
-
-                        Nothing ->
-                            model.posts
-            in
-                { model | posts = newPosts, viewContent = ViewPost } ! []
+            { model | currentPost = id, viewContent = ViewPost } ! []
 
         SelectAuthor id ->
             let
@@ -211,12 +201,12 @@ update msg model =
         PostTitle title ->
             let
                 newPosts =
-                    Zipper.mapCurrent
-                        (\p ->
-                            { p
-                                | title = title
-                                , mDate = Date.fromTime model.currentTime
-                            }
+                    Dict.update model.currentPost
+                        (\post -> case post of
+                            Just p ->
+                                Just { p | title = title, mDate = Date.fromTime model.currentTime }
+                            Nothing ->
+                                post
                         )
                         model.posts
             in
@@ -225,12 +215,12 @@ update msg model =
         PostBody body ->
             let
                 newPosts =
-                    Zipper.mapCurrent
-                        (\p ->
-                            { p
-                                | body = body
-                                , mDate = Date.fromTime model.currentTime
-                            }
+                    Dict.update model.currentPost
+                        (\post -> case post of
+                            Just p ->
+                                Just { p | body = body, mDate = Date.fromTime model.currentTime }
+                            Nothing ->
+                                post
                         )
                         model.posts
             in
@@ -239,12 +229,12 @@ update msg model =
         PostTags tags ->
             let
                 newPosts =
-                    Zipper.mapCurrent
-                        (\p ->
-                            { p
-                                | tags = tags
-                                , mDate = Date.fromTime model.currentTime
-                            }
+                    Dict.update model.currentPost
+                        (\post -> case post of
+                            Just p ->
+                                Just { p | tags = tags, mDate = Date.fromTime model.currentTime }
+                            Nothing ->
+                                post
                         )
                         model.posts
             in
@@ -261,16 +251,51 @@ update msg model =
                         Nothing ->
                             0
 
-                -- Updates the model with the author id.
+                -- Updates the model with the default author id.
                 newPosts =
-                    Zipper.mapCurrent (\p -> { p | authorId = defaultAuthorId })
+                    Dict.update model.currentPost
+                        (\post -> case post of
+                            Just p ->
+                                Just { p | authorId = defaultAuthorId }
+                            Nothing ->
+                                post
+                        )
                         model.posts
 
-                post =
-                    Zipper.current newPosts
+                -- If we have a post (we should) then save to localStorage.
+                newCmd =
+                    case Dict.get model.currentPost model.posts of
+                        Just p ->
+                            Ports.savePost <| Encoders.postToValue p
+
+                        Nothing ->
+                            Cmd.none
             in
                 -- Save to state and disk.
-                { model | posts = newPosts } ! [ Ports.savePost <| Encoders.postToValue post ]
+                { model | posts = newPosts } ! [ newCmd ]
+
+        NewPost ->
+            let
+                ( id, author ) =
+                    ( model.nextIds.nextPostId, Maybe.withDefault 0 model.defaultAuthor )
+
+                currDate =
+                    Date.fromTime model.currentTime
+
+                newPost =
+                    Post id "" currDate currDate "" author "" NotPublished []
+
+                posts =
+                    Dict.insert id newPost model.posts
+
+                nextIds =
+                    NextIds model.nextIds.nextAuthorId (id + 1) model.nextIds.nextImageId
+
+                ( updatedModel, updatedCmd ) =
+                    update (SelectPost id) model
+            in
+                { updatedModel | posts = posts, nextIds = nextIds, viewContent = ViewPost }
+                    ! [ saveNextIdsCmd nextIds, updatedCmd ]
 
 
 addToast : String -> Model -> ( Model, Cmd Msg )
@@ -355,5 +380,6 @@ deleteAuthor id model =
 
 authorInPosts : Id -> Model -> Bool
 authorInPosts id model =
-    Zipper.toList model.posts
-        |> List.any (\p -> p.authorId == id)
+    Dict.filter (\id post -> post.authorId == id) model.posts
+        |> Dict.size
+        |> (>=) 1

@@ -6,7 +6,20 @@ const saveConfig = (cfg) => {
 const getConfig = () => {
   var cfg = localStorage.getItem('config');
   if (cfg) return JSON.parse(cfg);
-  return {};
+
+  // Need to return an accurate empty representation
+  // so that Elm does not blow up.
+  return {
+    serverImagesPullCmd: "",
+    serverImagesPushCmd: "",
+    serverPostsPullCmd: "",
+    serverPostsPushCmd: "",
+    serverTriggerCmd: "",
+    postsDirectory: "",
+    imagesDirectory: "",
+    postCss: "",
+    postTemplate: ""
+  };
 };
 
 const saveAuthors = (authors) => {
@@ -26,7 +39,13 @@ const saveNextIds = (nextIds) => {
 const getNextIds = () => {
   var nextIds = localStorage.getItem('nextIds');
   if (nextIds) return JSON.parse(nextIds);
-  return {};
+
+  // Need to return an empty representation for Elm.
+  return {
+    nextAuthorId: 0,
+    nextPostId: 0,
+    nextImageId: 0
+  };
 };
 
 const saveDefaultAuthor = (defaultAuthor) => {
