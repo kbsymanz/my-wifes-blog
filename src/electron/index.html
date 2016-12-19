@@ -38,6 +38,10 @@
         client.saveAuthors(authors);
       });
 
+      app.ports.delAuthor.subscribe(function(id) {
+        client.delAuthor(id);
+      });
+
       app.ports.saveNextIds.subscribe(function(nextIds) {
         client.saveNextIds(nextIds);
       });
@@ -48,6 +52,10 @@
 
       app.ports.savePost.subscribe(function(post) {
         client.savePost(post);
+      });
+
+      app.ports.delPost.subscribe(function(id) {
+        client.delPost(id);
       });
     </script>
   </body>

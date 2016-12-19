@@ -121,7 +121,7 @@ deleteBtn model =
         model.mdl
         [ Button.raised
         , Button.ripple
-          --, Button.onClick (DelAuthor model.currentAuthor)
+        , Button.onClick (DelPost model.currentPost)
         , Options.css "margin-left" "30px"
         ]
         [ Html.text "Delete" ]

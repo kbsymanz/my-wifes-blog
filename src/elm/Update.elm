@@ -184,16 +184,11 @@ update msg model =
 
                 ( newModel, newCmd ) =
                     if not isReferenced then
-                        ( deleteAuthor id model, Cmd.none )
+                        ( deleteAuthor id model, Cmd.batch [ Ports.delAuthor <| Encoders.idToValue id ] )
                     else
                         addToast "Sorry, you cannot delete this author because this author still owns posts." model
             in
-                case ( firstOtherAuthorId, isReferenced ) of
-                    ( Just i, False ) ->
-                        update (SelectAuthor i) newModel
-
-                    _ ->
-                        newModel ! [ newCmd ]
+                newModel ! [ newCmd, Task.perform SelectAuthor (Task.succeed <| Maybe.withDefault 0 firstOtherAuthorId) ]
 
         SetDefaultAuthor maybeId ->
             { model | defaultAuthor = maybeId } ! [ Ports.saveDefaultAuthor <| Encoders.defaultAuthorToValue maybeId ]
@@ -202,11 +197,13 @@ update msg model =
             let
                 newPosts =
                     Dict.update model.currentPost
-                        (\post -> case post of
-                            Just p ->
-                                Just { p | title = title, mDate = Date.fromTime model.currentTime }
-                            Nothing ->
-                                post
+                        (\post ->
+                            case post of
+                                Just p ->
+                                    Just { p | title = title, mDate = Date.fromTime model.currentTime }
+
+                                Nothing ->
+                                    post
                         )
                         model.posts
             in
@@ -216,11 +213,13 @@ update msg model =
             let
                 newPosts =
                     Dict.update model.currentPost
-                        (\post -> case post of
-                            Just p ->
-                                Just { p | body = body, mDate = Date.fromTime model.currentTime }
-                            Nothing ->
-                                post
+                        (\post ->
+                            case post of
+                                Just p ->
+                                    Just { p | body = body, mDate = Date.fromTime model.currentTime }
+
+                                Nothing ->
+                                    post
                         )
                         model.posts
             in
@@ -230,11 +229,13 @@ update msg model =
             let
                 newPosts =
                     Dict.update model.currentPost
-                        (\post -> case post of
-                            Just p ->
-                                Just { p | tags = tags, mDate = Date.fromTime model.currentTime }
-                            Nothing ->
-                                post
+                        (\post ->
+                            case post of
+                                Just p ->
+                                    Just { p | tags = tags, mDate = Date.fromTime model.currentTime }
+
+                                Nothing ->
+                                    post
                         )
                         model.posts
             in
@@ -254,17 +255,19 @@ update msg model =
                 -- Updates the model with the default author id.
                 newPosts =
                     Dict.update model.currentPost
-                        (\post -> case post of
-                            Just p ->
-                                Just { p | authorId = defaultAuthorId }
-                            Nothing ->
-                                post
+                        (\post ->
+                            case post of
+                                Just p ->
+                                    Just { p | authorId = defaultAuthorId }
+
+                                Nothing ->
+                                    post
                         )
                         model.posts
 
                 -- If we have a post (we should) then save to localStorage.
                 newCmd =
-                    case Dict.get model.currentPost model.posts of
+                    case Dict.get model.currentPost newPosts of
                         Just p ->
                             Ports.savePost <| Encoders.postToValue p
 
@@ -296,6 +299,27 @@ update msg model =
             in
                 { updatedModel | posts = posts, nextIds = nextIds, viewContent = ViewPost }
                     ! [ saveNextIdsCmd nextIds, updatedCmd ]
+
+        DelPost id ->
+            let
+                newPosts =
+                    Dict.remove id model.posts
+
+                newCurrentPost =
+                    case
+                        Dict.keys newPosts
+                            |> List.reverse
+                            |> LE.dropWhile (\p -> p > id)
+                            |> List.head
+                    of
+                        Just i ->
+                            i
+
+                        Nothing ->
+                            0
+            in
+                { model | posts = newPosts, currentPost = newCurrentPost }
+                    ! [ Ports.delPost <| Encoders.idToValue id ]
 
 
 addToast : String -> Model -> ( Model, Cmd Msg )
@@ -382,4 +406,4 @@ authorInPosts : Id -> Model -> Bool
 authorInPosts id model =
     Dict.filter (\id post -> post.authorId == id) model.posts
         |> Dict.size
-        |> (>=) 1
+        |> flip (>=) 1

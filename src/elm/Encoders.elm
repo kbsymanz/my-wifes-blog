@@ -74,3 +74,7 @@ postToValue post =
         , ( "status", JE.string (U.postStatusToString post.status) )
         , ( "images", JE.list <| List.map (\i -> JE.int i) post.images )
         ]
+
+idToValue : Id -> JE.Value
+idToValue id =
+    JE.int id

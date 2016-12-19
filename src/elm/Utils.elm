@@ -117,7 +117,7 @@ postStatusToString : PostStatus -> String
 postStatusToString status =
     case status of
         NotPublished ->
-            "NotPublised"
+            "NotPublished"
 
         Published ->
             "Published"

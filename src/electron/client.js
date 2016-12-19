@@ -32,6 +32,14 @@ const getAuthors = () => {
   return [];
 };
 
+const delAuthor = (id) => {
+  var authors = getAuthors();
+  updatedAuthors = authors.filter(function(a) {
+    return a.id !== id;
+  });
+  saveAuthors(updatedAuthors);
+};
+
 const saveNextIds = (nextIds) => {
   localStorage.setItem('nextIds', JSON.stringify(nextIds));
 };
@@ -97,15 +105,30 @@ const getPosts = () => {
   return postsList;
 };
 
+const delPost = (id) => {
+  // Remove the post itself.
+  var post = postKey(id);
+  localStorage.removeItem(post);
+
+  // Remove the post id from the index.
+  var posts = getPostKeys();
+  var newPosts = posts.filter(function(i) {
+    return i !== id;
+  });
+  localStorage.setItem('posts', JSON.stringify(newPosts));
+};
+
 module.exports = {
   getConfig: getConfig,
   saveConfig: saveConfig,
   getAuthors: getAuthors,
   saveAuthors: saveAuthors,
+  delAuthor: delAuthor,
   getNextIds: getNextIds,
   saveNextIds: saveNextIds,
   getDefaultAuthor: getDefaultAuthor,
   saveDefaultAuthor: saveDefaultAuthor,
   savePost: savePost,
-  getPosts: getPosts
+  getPosts: getPosts,
+  delPost: delPost
 };

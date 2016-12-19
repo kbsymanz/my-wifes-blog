@@ -38,3 +38,4 @@ type Msg
     | PostTags String
     | SavePost
     | NewPost
+    | DelPost Int
