@@ -14,7 +14,7 @@ import Model exposing (..)
 import Msg exposing (..)
 import Update
 import Utils as U
-import View2 as View
+import View as View
 
 
 main : Program Flags Model Msg
