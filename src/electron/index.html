@@ -4,7 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <link rel="stylesheet" href="../css/fonts.css">
-    <link rel="stylesheet" href="../../vendor/mdl-themes/material.lightgreen-deeppurple.min.css">
+
+    <script src="../../bower_components/webcomponentsjs/webcomponents.js"></script>
+    <script>
+      window.Polymer = {
+        dom: 'shadow',
+        lazyRegister: true,
+        useNativeCSSProperties: true
+      };
+    </script>
+    <link rel="import" href="./import.html">
+
     <title>Markdown Manager</title>
     <script>
       window.Elm = require('../../dist/elmapp.js');
@@ -13,12 +23,12 @@
   <body>
     <div id='app'></div>
     <script>
-      var client = require('./client');
-      var config = client.getConfig();
-      var authors = client.getAuthors();
-      var nextIds = client.getNextIds();
-      var defaultAuthor = client.getDefaultAuthor();
-      var posts = client.getPosts();
+      var api = require('./api');
+      var config = api.getConfig();
+      var authors = api.getAuthors();
+      var nextIds = api.getNextIds();
+      var defaultAuthor = api.getDefaultAuthor();
+      var posts = api.getPosts();
 
       var node = document.getElementById('app');
       var app = Elm.Main.embed(node, {
@@ -30,32 +40,31 @@
       });
 
       app.ports.saveConfig.subscribe(function(cfg) {
-        console.log(cfg);
-        client.saveConfig(cfg);
+        api.saveConfig(cfg);
       });
 
       app.ports.saveAuthors.subscribe(function(authors) {
-        client.saveAuthors(authors);
+        api.saveAuthors(authors);
       });
 
       app.ports.delAuthor.subscribe(function(id) {
-        client.delAuthor(id);
+        api.delAuthor(id);
       });
 
       app.ports.saveNextIds.subscribe(function(nextIds) {
-        client.saveNextIds(nextIds);
+        api.saveNextIds(nextIds);
       });
 
       app.ports.saveDefaultAuthor.subscribe(function(defaultAuthor) {
-        client.saveDefaultAuthor(defaultAuthor);
+        api.saveDefaultAuthor(defaultAuthor);
       });
 
       app.ports.savePost.subscribe(function(post) {
-        client.savePost(post);
+        api.savePost(post);
       });
 
       app.ports.delPost.subscribe(function(id) {
-        client.delPost(id);
+        api.delPost(id);
       });
     </script>
   </body>
