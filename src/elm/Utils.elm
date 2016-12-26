@@ -79,35 +79,6 @@ dayToString day =
             "Sunday"
 
 
-textfieldStringML : Material.Model -> List Int -> String -> String -> (String -> Msg) -> Int -> Html Msg
-textfieldStringML mdl context lbl strVal msg rows =
-    Textfield.render Mdl
-        context
-        mdl
-        [ Textfield.label lbl
-        , Textfield.floatingLabel
-        , Textfield.textarea
-        , Textfield.rows rows
-        , Textfield.value strVal
-        , Textfield.onInput <| msg
-        ]
-
-
-textfieldString : Material.Model -> List Int -> String -> String -> (String -> Msg) -> Html Msg
-textfieldString mdl context lbl strVal msg =
-    Textfield.render Mdl
-        context
-        mdl
-        [ Textfield.label lbl
-        , Textfield.floatingLabel
-        , Textfield.value strVal
-        , Textfield.onInput <| msg
-        , Options.inner
-            [ Options.css "width" "100%"
-            ]
-        ]
-
-
 authorsFromList : List Author -> Dict Id Author
 authorsFromList authors =
     Dict.fromList <| List.map (\a -> ( a.id, a )) authors

@@ -1,0 +1,56 @@
+
+/* Various headings */
+.kbsymanz-headingStyle {
+  font-family: "Roboto, Helvetica, Arial, Sans-serif";
+  font-size: 45px;
+  font-weight: 400;
+  line-height: 48px;
+  letter-spacing: 0;
+  opacity: 0.54;
+}
+.kbsymanz-headingStyle2 {
+  font-family: "Roboto, Helvetica, Arial, Sans-serif";
+  font-size: 35px;
+  font-weight: 400;
+  line-height: 48px;
+  letter-spacing: 0;
+  opacity: 0.54;
+}
+.kbsymanz-appHeaderStyle {
+  font-family: "Roboto, Helvetica, Arial, Sans-serif";
+  font-size: 45px;
+  font-weight: 400;
+  line-height: 48px;
+  letter-spacing: 0;
+  opacity: 0.84;
+  background-color: #009688;  /* teal */
+  color: #DADDD6; /* off white */
+  height: 50px;
+  padding: 20px;
+}
+
+/* Checkboxes */
+.kbsymanz-checkbox-wrapper {
+  font-size: 120%;
+}
+.kbsymanz-checkbox-wrapper input {
+  width: 20px;
+  height: 20px;
+  margin-right: 0.75em;
+}
+
+/* Buttons */
+.kbsymanz-button {
+  margin-right: 2em;
+}
+
+/* Textfields */
+.kbsymanz-textfieldString label {
+  font-weight: bold; 
+}
+.kbsymanz-textfieldString input {
+  font-size: 1.5em;
+}
+.kbsymanz-textfieldString textarea {
+  font-size: 1.5em;
+}

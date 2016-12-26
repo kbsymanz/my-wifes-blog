@@ -5,15 +5,6 @@ import Html exposing (Html)
 import Html.Attributes as HA
 import Html.Events as HE
 import List.Extra as LE
-import Material
-import Material.Button as Button
-import Material.Card as Card
-import Material.Grid as Grid
-import Material.Layout as Layout
-import Material.Options as Options
-import Material.Textfield as Textfield
-import Material.Toggles as Toggles
-import Material.Typography as Typo
 
 
 -- LOCAL IMPORTS
@@ -21,18 +12,13 @@ import Material.Typography as Typo
 import Model exposing (..)
 import Msg exposing (..)
 import Utils as U
-
-
-authorsContext : Int
-authorsContext =
-    2000
+import VUtils as VU exposing ((=>))
 
 
 view : Model -> Html Msg
 view model =
     let
         author =
-            --LE.find (\a -> a.id == model.currentAuthor) model.authors
             Dict.get model.currentAuthor model.authors
 
         ( fname, lname ) =
@@ -43,51 +29,17 @@ view model =
                 Nothing ->
                     ( "Not", "Found" )
     in
-        Grid.grid []
-            [ Grid.cell
-                [ Grid.size Grid.Desktop 12
-                , Grid.size Grid.Tablet 8
-                , Grid.size Grid.Phone 4
-                ]
-                [ Options.styled Html.p
-                    [ Typo.display2 ]
-                    [ Html.span []
-                        [ Html.text <| fname ++ " " ++ lname
-                        , saveBtn model
-                        , deleteBtn model
-                        ]
-                    ]
+        Html.div
+            [ HA.class "pure-g"
+            ]
+            [ Html.div [ HA.class "pure-u-1" ]
+                [ Html.p [ HA.class "kbsymanz-headingStyle" ]
+                    [ Html.text <| fname ++ " " ++ lname ]
+                , VU.button SaveAuthors "Save"
+                , VU.button (DelAuthor model.currentAuthor) "Delete"
                 , authorForm author model
-                  --, Html.p []
-                  --[ Html.text <| toString model ]
                 ]
             ]
-
-
-saveBtn : Model -> Html Msg
-saveBtn model =
-    Button.render Mdl
-        [ authorsContext, 100 ]
-        model.mdl
-        [ Button.raised
-        , Button.ripple
-        , Button.onClick SaveAuthors
-        , Options.css "margin-left" "30px"
-        ]
-        [ Html.text "Save" ]
-
-
-deleteBtn : Model -> Html Msg
-deleteBtn model =
-    Button.render Mdl
-        [ authorsContext, 102 ]
-        model.mdl
-        [ Button.raised
-        , Button.ripple
-        , Button.onClick (DelAuthor model.currentAuthor)
-        , Options.css "margin-left" "30px"
-        ]
-        [ Html.text "Delete" ]
 
 
 authorForm : Maybe Author -> Model -> Html Msg
@@ -113,39 +65,53 @@ authorForm author model =
             [ Html.text
                 <| "Id: "
                 ++ if author == Nothing then
-                    ""
+                    "100"
                    else
                     (toString id)
-            , Toggles.checkbox Mdl
-                [ authorsContext, 10 ]
-                model.mdl
-                [ Toggles.onClick defaultAuthorMsg
-                , Toggles.ripple
-                , Toggles.value (model.defaultAuthor == Just id)
-                , if author == Nothing then
-                    Options.disabled True
-                  else
-                    Options.disabled False
+            , Html.br [] []
+            , Html.form [ HA.class "pure-form pure-form-stacked" ]
+                [ Html.fieldset []
+                    [ VU.checkBox defaultAuthorMsg
+                        (model.defaultAuthor == Just id)
+                        (if author == Nothing then
+                            True
+                         else
+                            False
+                        )
+                        "Make the default author"
+                        "defaultAuthorId"
+                    , VU.textfieldString AuthorFirstname
+                        firstname
+                        (if author == Nothing then
+                            True
+                         else
+                            False
+                        )
+                        "First name"
+                        "firstnameId"
+                        ""
+                    , VU.textfieldString AuthorLastname
+                        lastname
+                        (if author == Nothing then
+                            True
+                         else
+                            False
+                        )
+                        "Last name"
+                        "lastnameId"
+                        ""
+                    , VU.textfieldString AuthorEmail
+                        email
+                        (if author == Nothing then
+                            True
+                         else
+                            False
+                        )
+                        "Email"
+                        "emailId"
+                        ""
+                    ]
                 ]
-                [ Html.text "Make the default author" ]
-            , Html.br [] []
-            , U.textfieldString model.mdl
-                [ authorsContext, 0 ]
-                "First name"
-                firstname
-                (\f -> AuthorFirstname f)
-            , Html.br [] []
-            , U.textfieldString model.mdl
-                [ authorsContext, 1 ]
-                "Last name"
-                lastname
-                (\l -> AuthorLastname l)
-            , Html.br [] []
-            , U.textfieldString model.mdl
-                [ authorsContext, 2 ]
-                "Email"
-                email
-                (\e -> AuthorEmail e)
             ]
 
 
@@ -153,19 +119,11 @@ viewAuthorsList : Model -> Html Msg
 viewAuthorsList model =
     let
         buildRow author =
-            Layout.row []
-                [ Layout.title []
-                    [ Card.view
-                        [ Options.attribute <| HE.onClick <| SelectAuthor author.id
-                        ]
-                        [ Card.title []
-                            [ Card.head []
-                                [ Html.text <| author.firstname ++ " " ++ author.lastname
-                                ]
-                            ]
-                        ]
-                    ]
+            Html.h4
+                [ HA.class "pure-u-1"
+                , HE.onClick <| SelectAuthor author.id
                 ]
+                [ Html.text <| author.firstname ++ " " ++ author.lastname ]
     in
         Html.div
             [ HA.style
@@ -173,28 +131,12 @@ viewAuthorsList model =
                 , ( "min-height", "25%" )
                 , ( "scroll-y", "auto" )
                 ]
+            , HA.class "pure-g"
             ]
-            <| [ Layout.row []
-                    [ Layout.title []
-                        [ Options.styled Html.p
-                            [ Typo.display2 ]
-                            [ Html.text "Authors"
-                            , newBtn model
-                            ]
-                        ]
+            <| [ Html.div [ HA.class "pure-u-1" ]
+                    [ Html.span [ HA.class "kbsymanz-headingStyle2" ]
+                        [ Html.text <| "Authors" ++ " " ]
+                    , VU.button NewAuthor "New"
                     ]
                ]
             ++ (List.map buildRow <| Dict.values model.authors)
-
-
-newBtn : Model -> Html Msg
-newBtn model =
-    Button.render Mdl
-        [ authorsContext, 101 ]
-        model.mdl
-        [ Button.raised
-        , Button.ripple
-        , Button.onClick NewAuthor
-        , Options.css "margin-left" "30px"
-        ]
-        [ Html.text "New" ]

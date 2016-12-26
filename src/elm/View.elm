@@ -2,16 +2,10 @@ module View exposing (view)
 
 import Color
 import Html exposing (Html)
+import Html.Attributes as HA
 import Html.Events as HE
 import List.Extra as LE
-import Material
-import Material.Card as Card
-import Material.Grid as Grid
-import Material.Icons.Action exposing (settings, settings_application)
-import Material.Layout as Layout
-import Material.Options as Options
-import Material.Snackbar as Snackbar
-import Material.Typography as Typo
+import Material.Icons.Action exposing (settings)
 
 
 -- LOCAL IMPORTS
@@ -22,39 +16,37 @@ import Utils as U
 import Views.Authors as VAuthors
 import Views.Posts as VPosts
 import Views.Settings as VSettings
+import VUtils as VU exposing ((=>))
 
-
--- TODO: do I want a layout? Is that what is forcing wasted space on the left?
 
 
 view : Model -> Html Msg
 view model =
-    Layout.render Mdl
-        model.mdl
-        [ Layout.fixedHeader
-        , Layout.fixedDrawer
+    Html.div [ HA.class "pure-g" ]
+        [ Html.div [ HA.class "pure-u-1" ]
+            [ headerSmall "Blog Manager" model ]
+        , Html.div [ HA.class "pure-u-1" ]
+            [ viewMain model ]
         ]
-        { header = headerSmall "Blog Manager" model
-        , drawer = []
-        , tabs = ( [], [] )
-        , main = [ viewMain model ]
-        }
 
 
-headerSmall : String -> Model -> List (Html Msg)
+headerSmall : String -> Model -> Html Msg
 headerSmall title model =
-    let
-        contents =
-            [ Layout.row []
-                [ Layout.title []
-                    [ Options.styled Html.p [ Typo.headline ] [ Html.text title ] ]
-                , Layout.spacer
-                , Html.div [ HE.onClick <| SelectSettings ]
-                    [ settings Color.white 40 ]
-                ]
+    Html.div [ HA.class "pure-g" ]
+        [ Html.div [ HA.class "pure-u-xl-23-24 pure-u-lg-11-12 pure-u-md-5-6 pure-u-sm-3-4" ]
+            [ Html.div
+                [ HA.class "kbsymanz-appHeaderStyle" ]
+                [ Html.text title ]
             ]
-    in
-        contents
+        , Html.div
+            [ HA.class "pure-u-xl-1-24 pure-u-lg-1-12 pure-u-md-1-6 pure-u-sm-1-4"
+            , HE.onClick SelectSettings
+            ]
+            [ Html.div
+                [ HA.class "kbsymanz-appHeaderStyle" ]
+                [ settings Color.grey 40 ]
+            ]
+        ]
 
 
 postsAuthorsList : Model -> Html Msg
@@ -73,7 +65,6 @@ viewContent : Model -> Html Msg
 viewContent model =
     case model.viewContent of
         ViewPost ->
-            --viewContentPost model
             VPosts.view model
 
         ViewAuthor ->
@@ -85,21 +76,9 @@ viewContent model =
 
 viewMain : Model -> Html Msg
 viewMain model =
-    Html.div []
-        [ Grid.grid []
-            [ Grid.cell
-                [ Grid.size Grid.Desktop 4
-                , Grid.size Grid.Tablet 3
-                , Grid.size Grid.Phone 4
-                ]
-                [ postsAuthorsList model ]
-            , Grid.cell
-                [ Grid.size Grid.Desktop 8
-                , Grid.size Grid.Tablet 5
-                , Grid.size Grid.Phone 4
-                ]
-                [ viewContent model
-                , Html.map (\m -> Toast m) <| Snackbar.view model.toast
-                ]
-            ]
+    Html.div [ HA.class "pure-g" ]
+        [ Html.div [ HA.class "pure-u-1-3" ]
+            [ postsAuthorsList model ]
+        , Html.div [ HA.class "pure-u-2-3" ]
+            [ viewContent model ]
         ]

@@ -5,14 +5,6 @@ import Dict exposing (Dict)
 import Html exposing (Html)
 import Html.Attributes as HA
 import Html.Events as HE
-import Material
-import Material.Button as Button
-import Material.Card as Card
-import Material.Grid as Grid
-import Material.Layout as Layout
-import Material.Options as Options
-import Material.Textfield as Textfield
-import Material.Typography as Typo
 
 
 -- LOCAL IMPORTS
@@ -20,11 +12,7 @@ import Material.Typography as Typo
 import Model exposing (..)
 import Msg exposing (..)
 import Utils as U
-
-
-postsContext : Int
-postsContext =
-    3000
+import VUtils as VU exposing ((=>))
 
 
 view : Model -> Html Msg
@@ -41,23 +29,16 @@ view model =
                 Nothing ->
                     ""
     in
-        Grid.grid []
-            [ Grid.cell
-                [ Grid.size Grid.Desktop 12
-                , Grid.size Grid.Tablet 8
-                , Grid.size Grid.Phone 4
-                ]
-                [ Options.styled Html.p
-                    [ Typo.display2 ]
-                    [ Html.span []
-                        [ Html.text <| title
-                        , saveBtn model
-                        , deleteBtn model
-                        ]
-                    ]
+        Html.div [ HA.class "pure-g" ]
+            [ Html.div [ HA.class "pure-u-1" ]
+                [ Html.p [ HA.class "kbsymanz-headingStyle" ]
+                    [ Html.text title ]
+                , VU.button SavePost "Save"
+                , VU.button (DelPost model.currentPost) "Delete"
                 , case cPost of
                     Just p ->
                         postForm p model
+
                     Nothing ->
                         Html.text ""
                 ]
@@ -75,69 +56,31 @@ postForm post model =
                 Nothing ->
                     ( "Not Found", Nothing )
     in
-        Html.div []
+        Html.form [ HA.class "pure-form pure-form-stacked" ]
             [ Html.text <| "Id: " ++ (toString post.id)
             , Html.br [] []
             , Html.text <| "Author: " ++ authorName ++ " (set a different default author and save to change)"
             , Html.br [] []
-            , U.textfieldString model.mdl
-                [ postsContext, 0 ]
-                "Title"
+            , VU.textfieldString PostTitle
                 post.title
-                (\t -> PostTitle t)
-            , Html.br [] []
-            , U.textfieldString model.mdl
-                [ postsContext, 1 ]
-                "Tags (separate with spaces)"
+                False
+                "Title"
+                "postTitleId"
+                "pure-input-1-2"
+            , VU.textfieldString PostTags
                 post.tags
-                (\t -> PostTags t)
-            , Html.br [] []
-            , U.textfieldStringML model.mdl
-                [ postsContext, 2 ]
-                "Body"
+                False
+                "Tags (separate with spaces)"
+                "postTagsId"
+                "pure-input-1-2"
+            , VU.textfieldStringML PostBody
                 post.body
-                (\b -> PostBody b)
-                20
+                False
+                "Body"
+                "postBodyId"
+                "pure-input-1"
+                30
             ]
-
-
-saveBtn : Model -> Html Msg
-saveBtn model =
-    Button.render Mdl
-        [ postsContext, 100 ]
-        model.mdl
-        [ Button.raised
-        , Button.ripple
-        , Button.onClick SavePost
-        , Options.css "margin-left" "30px"
-        ]
-        [ Html.text "Save" ]
-
-
-deleteBtn : Model -> Html Msg
-deleteBtn model =
-    Button.render Mdl
-        [ postsContext, 102 ]
-        model.mdl
-        [ Button.raised
-        , Button.ripple
-        , Button.onClick (DelPost model.currentPost)
-        , Options.css "margin-left" "30px"
-        ]
-        [ Html.text "Delete" ]
-
-
-newBtn : Model -> Html Msg
-newBtn model =
-    Button.render Mdl
-        [ postsContext, 103 ]
-        model.mdl
-        [ Button.raised
-        , Button.ripple
-        , Button.onClick NewPost
-        , Options.css "margin-left" "30px"
-        ]
-        [ Html.text "New" ]
 
 
 viewPostsList : Model -> Html Msg
@@ -155,21 +98,17 @@ viewPostsList model =
                         ++ ", "
                         ++ (toString <| Date.year post.mDate)
             in
-                Layout.row []
-                    [ Layout.title []
-                        [ Card.view
-                            [ Options.attribute <| HE.onClick <| SelectPost post.id
-                            ]
-                            [ Card.title []
-                                [ Card.head []
-                                    [ Html.text post.title
-                                    ]
-                                , Card.subhead []
-                                    [ Html.text mDate
-                                    ]
-                                ]
-                            ]
+                Html.div
+                    [ HA.class "pure-u-1"
+                    , HA.style
+                        [ "border-bottom" => "1px dotted #888888"
                         ]
+                    , HE.onClick <| SelectPost post.id
+                    ]
+                    [ Html.h4 []
+                        [ Html.text <| post.title ]
+                    , Html.div []
+                        [ Html.text mDate ]
                     ]
     in
         Html.div
@@ -179,14 +118,10 @@ viewPostsList model =
                 , ( "scroll-y", "auto" )
                 ]
             ]
-            <| [ Layout.row []
-                    [ Layout.title []
-                        [ Options.styled Html.p
-                            [ Typo.display2 ]
-                            [ Html.text "Posts"
-                            , newBtn model
-                            ]
-                        ]
+            <| [ Html.div [ HA.class "pure-u-1" ]
+                    [ Html.span [ HA.class "kbsymanz-headingStyle2" ]
+                        [ Html.text <| "Posts" ++ " " ]
+                    , VU.button NewPost "New"
                     ]
                ]
-            ++ List.map buildRow posts
+            ++ (List.map buildRow posts)
