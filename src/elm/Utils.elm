@@ -10,7 +10,7 @@ import Material.Textfield as Textfield
 
 -- LOCAL IMPORTS
 
-import Model exposing (Mdl, Id, Author, PostStatus(..))
+import Model exposing (Id, Author, PostStatus(..))
 import Msg exposing (..)
 
 

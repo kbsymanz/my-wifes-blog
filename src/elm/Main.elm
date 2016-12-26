@@ -42,7 +42,7 @@ init flags =
                 |> List.map (\p -> (p.id, p))
                 |> Dict.fromList
           }
-        , Layout.sub0 Mdl
+        , Cmd.none
         )
 
 
@@ -50,5 +50,4 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Time.every Time.second Tick
-        , Layout.subs Mdl model.mdl
         ]

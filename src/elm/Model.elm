@@ -3,8 +3,6 @@ module Model exposing (..)
 import Date exposing (Date)
 import Dict exposing (Dict)
 import Json.Encode as JE
-import Material
-import Material.Snackbar as Snackbar
 import Time exposing (Time)
 
 
@@ -18,10 +16,10 @@ type alias Model =
     , viewContent : ViewContent
     , isSyncing : Bool
     , config : Config
-    , mdl : Material.Model
-    , toast : Snackbar.Model ()
     , currentTime : Time
     , nextIds : NextIds
+    , userMessage : Maybe String
+    , userMessageTime : Time
     }
 
 
@@ -80,6 +78,7 @@ type ViewContent
     = ViewPost
     | ViewAuthor
     | ViewSettings
+    | ViewNothing
 
 
 type Placement
@@ -156,10 +155,6 @@ type alias Id =
     Int
 
 
-type alias Mdl =
-    Material.Model
-
-
 config : Config
 config =
     { serverImagesPullCmd = ""
@@ -182,13 +177,13 @@ model =
     , currentAuthor = 0
     , currentPost = 0
     , defaultAuthor = Nothing
-    , viewContent = ViewPost
+    , viewContent = ViewNothing
     , isSyncing = False
     , config = config
-    , mdl = Material.model
-    , toast = Snackbar.model
     , currentTime = 0
     , nextIds = nextIds
+    , userMessage = Just "Select either a post or author on the left, or settings in the upper right."
+    , userMessageTime = 0
     }
 
 

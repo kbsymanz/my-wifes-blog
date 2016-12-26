@@ -2,8 +2,6 @@ module Update exposing (update)
 
 import Date
 import Dict exposing (Dict)
-import Material
-import Material.Snackbar as Snackbar
 import List.Extra as LE
 import Task
 
@@ -19,21 +17,25 @@ import Ports
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        Mdl message ->
-            Material.update message model
+        SetMessage msg ->
+            { model | userMessage = Just msg, userMessageTime = model.currentTime } ! []
 
-        Toast message ->
+        ClearMessage ->
             let
-                ( sbModel, sbCmd ) =
-                    Snackbar.update message model.toast
+                -- Make sure some time has passed before clearing a message.
+                newModel =
+                    if model.currentTime == model.userMessageTime then
+                        model
+                    else
+                        { model | userMessage = Nothing, userMessageTime = 0 }
             in
-                { model | toast = sbModel } ! [ Cmd.map Toast sbCmd ]
+             newModel ! []
 
         Tick time ->
             { model | currentTime = time } ! []
 
         SelectPost id ->
-            { model | currentPost = id, viewContent = ViewPost } ! []
+            { model | currentPost = id, viewContent = ViewPost } ! [ clearMessage ]
 
         SelectAuthor id ->
             let
@@ -48,10 +50,10 @@ update msg model =
                         Nothing ->
                             model
             in
-                newModel ! []
+                newModel ! [ clearMessage ]
 
         SelectSettings ->
-            { model | viewContent = ViewSettings } ! []
+            { model | viewContent = ViewSettings } ! [ clearMessage ]
 
         ServerImagesPullCmd cmd ->
             let
@@ -186,7 +188,7 @@ update msg model =
                     if not isReferenced then
                         ( deleteAuthor id model, Cmd.batch [ Ports.delAuthor <| Encoders.idToValue id ] )
                     else
-                        addToast "Sorry, you cannot delete this author because this author still owns posts." model
+                        ( model, setMessage "Sorry, the author cannot be deleted while still owning posts." )
             in
                 newModel ! [ newCmd, Task.perform SelectAuthor (Task.succeed <| Maybe.withDefault 0 firstOtherAuthorId) ]
 
@@ -322,16 +324,14 @@ update msg model =
                     ! [ Ports.delPost <| Encoders.idToValue id ]
 
 
-addToast : String -> Model -> ( Model, Cmd Msg )
-addToast msg model =
-    let
-        sbContent =
-            Snackbar.toast () msg
+clearMessage : Cmd Msg
+clearMessage =
+        Task.perform (\_ -> ClearMessage) (Task.succeed True)
 
-        ( sbModel, sbCmd ) =
-            Snackbar.add sbContent model.toast
-    in
-        ( { model | toast = sbModel }, Cmd.map Toast sbCmd )
+
+setMessage : String -> Cmd Msg
+setMessage msg =
+    Task.perform SetMessage (Task.succeed msg)
 
 
 saveNextIdsCmd : NextIds -> Cmd msg
@@ -404,6 +404,6 @@ deleteAuthor id model =
 
 authorInPosts : Id -> Model -> Bool
 authorInPosts id model =
-    Dict.filter (\id post -> post.authorId == id) model.posts
+    Dict.filter (\_ post -> post.authorId == id) model.posts
         |> Dict.size
         |> flip (>=) 1

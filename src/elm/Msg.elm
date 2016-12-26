@@ -6,9 +6,9 @@ import Time exposing (Time)
 
 
 type Msg
-    = Mdl (Material.Msg Msg)
-    | Toast (Snackbar.Msg ())
-    | Tick Time
+    = Tick Time
+    | SetMessage String
+    | ClearMessage
       -- Main screen selections.
     | SelectPost Int
     | SelectAuthor Int
