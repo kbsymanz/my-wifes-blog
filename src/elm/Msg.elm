@@ -12,6 +12,8 @@ type Msg
       -- Main screen selections.
     | SelectPost Int
     | SelectAuthor Int
+    | ViewPosts
+    | ViewAuthors
     | SelectSettings
       -- Configuration settings.
     | ServerImagesPullCmd String

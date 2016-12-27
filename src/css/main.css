@@ -57,6 +57,24 @@
   font-weight: 400;
   padding: 0.25em 1em 0.25em 1em;
   text-align: right;
+  height: 1.5em;
+  min-height: 1.5em;
+}
+
+/* Forms */
+.kbsymanz-form {
+  margin-top: 1em;
+}
+.kbsymanz-form-field {
+  padding: 0.5em 0 0.5em 0;
+}
+
+.kbsymanz-hr {
+  margin: 0.7em 0 0.7em 0;
+  padding: 0.3em 0 0.3em 0;
+  background-color: #009688;
+  color: #009688;
+  opacity: 0.33;
 }
 
 /* Checkboxes */

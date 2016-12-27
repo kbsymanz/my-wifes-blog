@@ -21,25 +21,27 @@ view model =
         author =
             Dict.get model.currentAuthor model.authors
 
-        ( fname, lname ) =
+        content =
             case author of
                 Just a ->
-                    ( a.firstname, a.lastname )
-
+                    Html.div
+                        [ HA.class "pure-g" ]
+                        [ Html.div [ HA.class "pure-u-1" ]
+                            [ Html.p [ HA.class "kbsymanz-headingStyle" ]
+                                [ Html.text <| a.firstname ++ " " ++ a.lastname ]
+                            , VU.button SaveAuthors "Save"
+                            , VU.button (DelAuthor model.currentAuthor) "Delete"
+                            , authorForm author model
+                            ]
+                        ]
                 Nothing ->
-                    ( "Not", "Found" )
+                    Html.div
+                        [ HA.class "pure-g" ]
+                        [ Html.div [ HA.class "pure-u-1" ]
+                            [ Html.text "" ]
+                        ]
     in
-        Html.div
-            [ HA.class "pure-g"
-            ]
-            [ Html.div [ HA.class "pure-u-1" ]
-                [ Html.p [ HA.class "kbsymanz-headingStyle" ]
-                    [ Html.text <| fname ++ " " ++ lname ]
-                , VU.button SaveAuthors "Save"
-                , VU.button (DelAuthor model.currentAuthor) "Delete"
-                , authorForm author model
-                ]
-            ]
+        content
 
 
 authorForm : Maybe Author -> Model -> Html Msg
@@ -61,7 +63,8 @@ authorForm author model =
             else
                 SetDefaultAuthor (Just id)
     in
-        Html.div []
+        Html.div
+            [ HA.class "kbsymanz-form" ]
             [ Html.text
                 <| "Id: "
                 ++ if author == Nothing then
@@ -126,13 +129,7 @@ viewAuthorsList model =
                 [ Html.text <| author.firstname ++ " " ++ author.lastname ]
     in
         Html.div
-            [ HA.style
-                [ ( "height", "25%" )
-                , ( "min-height", "25%" )
-                , ( "scroll-y", "auto" )
-                ]
-            , HA.class "pure-g"
-            ]
+            [ HA.class "pure-g" ]
             <| [ Html.div [ HA.class "pure-u-1" ]
                     [ Html.span [ HA.class "kbsymanz-headingStyle2" ]
                         [ Html.text <| "Authors" ++ " " ]

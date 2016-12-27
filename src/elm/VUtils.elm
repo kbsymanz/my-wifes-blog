@@ -16,7 +16,7 @@ checkBox : Msg -> Bool -> Bool -> String -> String -> Html Msg
 checkBox msg val disabled lbl id =
     Html.div
         [ HA.class "pure-controls"
-        , HA.class "kbsymanz-checkbox-wrapper"
+        , HA.class "kbsymanz-checkbox-wrapper kbsymanz-form-field"
         ]
         [ Html.label
             [ HA.for id
@@ -38,7 +38,7 @@ checkBox msg val disabled lbl id =
 textfieldString : (String -> Msg) -> String -> Bool -> String -> String -> String -> Html Msg
 textfieldString msg val disabled lbl id inputClass =
     Html.div
-        [ HA.class "kbsymanz-textfieldString" ]
+        [ HA.class "kbsymanz-textfieldString kbsymanz-form-field" ]
         [ Html.label
             [ HA.for id ]
             [ Html.text lbl ]
@@ -56,7 +56,7 @@ textfieldString msg val disabled lbl id inputClass =
 textfieldStringML : (String -> Msg) -> String -> Bool -> String -> String -> String -> Int -> Html Msg
 textfieldStringML msg val disabled lbl id inputClass rows =
     Html.div
-        [ HA.class "kbsymanz-textfieldString" ]
+        [ HA.class "kbsymanz-textfieldString kbsymanz-form-field" ]
         [ Html.label
             [ HA.for id ]
             [ Html.text lbl ]

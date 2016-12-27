@@ -34,6 +34,12 @@ update msg model =
         Tick time ->
             { model | currentTime = time } ! []
 
+        ViewPosts ->
+            { model | viewContent = ViewPost } ! []
+
+        ViewAuthors ->
+            { model | viewContent = ViewAuthor } ! []
+
         SelectPost id ->
             { model | currentPost = id, viewContent = ViewPost } ! [ clearMessage ]
 

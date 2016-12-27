@@ -60,10 +60,50 @@ headerSmall title model =
 postsAuthorsList : Model -> Html Msg
 postsAuthorsList model =
     let
+        contentFunction =
+            case model.viewContent of
+                ViewPost ->
+                    VPosts.viewPostsList
+
+                ViewAuthor ->
+                    VAuthors.viewAuthorsList
+
+                _ ->
+                    VPosts.viewPostsList
+
         contents =
-            Html.div []
-                [ VPosts.viewPostsList model
-                , VAuthors.viewAuthorsList model
+            Html.div [ HA.class "pure-menu pure-menu-horizontal" ]
+                [ Html.ul [ HA.class "pure-menu-list" ]
+                    [ Html.li
+                        [ HA.class "pure-menu-item"
+                        , if model.viewContent == ViewPost || model.viewContent == ViewNothing then
+                            HA.class "pure-menu-selected"
+                          else
+                            HA.class ""
+                        ]
+                        [ Html.a
+                            [ HA.attribute "href" "#"
+                            , HA.class "pure-menu-link"
+                            , HE.onClick ViewPosts
+                            ]
+                            [ Html.text "Posts" ]
+                        ]
+                    , Html.li
+                        [ HA.class "pure-menu-item"
+                        , if model.viewContent == ViewAuthor then
+                            HA.class "pure-menu-selected"
+                          else
+                            HA.class ""
+                        ]
+                        [ Html.a
+                            [ HA.attribute "href" "#"
+                            , HA.class "pure-menu-link"
+                            , HE.onClick ViewAuthors
+                            ]
+                            [ Html.text "Authors" ]
+                        ]
+                    ]
+                , contentFunction model
                 ]
     in
         contents
@@ -89,8 +129,8 @@ viewContent model =
 viewMain : Model -> Html Msg
 viewMain model =
     Html.div [ HA.class "pure-g" ]
-        [ Html.div [ HA.class "pure-u-1-3 one-box" ]
+        [ Html.div [ HA.class "pure-u-1-4 one-box" ]
             [ postsAuthorsList model ]
-        , Html.div [ HA.class "pure-u-2-3 one-box" ]
+        , Html.div [ HA.class "pure-u-3-4 one-box" ]
             [ viewContent model ]
         ]

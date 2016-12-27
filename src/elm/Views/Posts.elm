@@ -21,28 +21,26 @@ view model =
         cPost =
             Dict.get model.currentPost model.posts
 
-        title =
+        content =
             case cPost of
-                Just t ->
-                    t.title
+                Just p ->
+                    Html.div [ HA.class "pure-g" ]
+                        [ Html.div [ HA.class "pure-u-1" ]
+                            [ Html.p [ HA.class "kbsymanz-headingStyle" ]
+                                [ Html.text p.title ]
+                            , VU.button SavePost "Save"
+                            , VU.button (DelPost model.currentPost) "Delete"
+                            , postForm p model
+                            ]
+                        ]
 
                 Nothing ->
-                    ""
+                    Html.div [ HA.class "pure-g" ]
+                        [ Html.div [ HA.class "pure-u-1" ]
+                            [ Html.text "" ]
+                        ]
     in
-        Html.div [ HA.class "pure-g" ]
-            [ Html.div [ HA.class "pure-u-1" ]
-                [ Html.p [ HA.class "kbsymanz-headingStyle" ]
-                    [ Html.text title ]
-                , VU.button SavePost "Save"
-                , VU.button (DelPost model.currentPost) "Delete"
-                , case cPost of
-                    Just p ->
-                        postForm p model
-
-                    Nothing ->
-                        Html.text ""
-                ]
-            ]
+        content
 
 
 postForm : Post -> Model -> Html Msg
@@ -56,11 +54,11 @@ postForm post model =
                 Nothing ->
                     ( "Not Found", Nothing )
     in
-        Html.form [ HA.class "pure-form pure-form-stacked" ]
-            [ Html.text <| "Id: " ++ (toString post.id)
-            , Html.br [] []
-            , Html.text <| "Author: " ++ authorName ++ " (set a different default author and save to change)"
-            , Html.br [] []
+        Html.form [ HA.class "pure-form pure-form-stacked kbsymanz-form" ]
+            [ Html.div [ HA.class "kbsymanz-form-field" ]
+                [ Html.text <| "Id: " ++ (toString post.id) ]
+            , Html.div [ HA.class "kbsymanz-form-field" ]
+                [ Html.text <| "Author: " ++ authorName ++ " (set a different default author and save to change)" ]
             , VU.textfieldString PostTitle
                 post.title
                 False
@@ -79,7 +77,7 @@ postForm post model =
                 "Body"
                 "postBodyId"
                 "pure-input-1"
-                30
+                15
             ]
 
 
@@ -88,6 +86,8 @@ viewPostsList model =
     let
         posts =
             Dict.values model.posts
+                |> List.sortBy (\p -> Date.toTime p.mDate)
+                |> List.reverse
 
         buildRow post =
             let
@@ -111,13 +111,7 @@ viewPostsList model =
                         [ Html.text mDate ]
                     ]
     in
-        Html.div
-            [ HA.style
-                [ ( "height", "75%" )
-                , ( "min-height", "75%" )
-                , ( "scroll-y", "auto" )
-                ]
-            ]
+        Html.div [ HA.class "pure-g" ]
             <| [ Html.div [ HA.class "pure-u-1" ]
                     [ Html.span [ HA.class "kbsymanz-headingStyle2" ]
                         [ Html.text <| "Posts" ++ " " ]
