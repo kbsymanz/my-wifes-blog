@@ -18,23 +18,11 @@ settingsForm model =
     Html.div [ HA.class "pure-g" ]
         [ Html.div [ HA.class "pure-u-1" ]
             [ Html.form [ HA.class "pure-form pure-form-stacked" ]
-                [ VU.textfieldString ServerImagesPullCmd
-                    model.config.serverImagesPullCmd
-                    False
-                    "Command to pull images from the server"
-                    "serverImagesPullCmdId"
-                    "pure-input-1"
-                , VU.textfieldString ServerImagesPushCmd
+                [ VU.textfieldString ServerImagesPushCmd
                     model.config.serverImagesPushCmd
                     False
                     "Command to push images to the server"
                     "serverImagesPushCmdId"
-                    "pure-input-1"
-                , VU.textfieldString ServerPostsPullCmd
-                    model.config.serverPostsPullCmd
-                    False
-                    "Command to pull posts from the server"
-                    "serverPostsPullCmdId"
                     "pure-input-1"
                 , VU.textfieldString ServerPostsPushCmd
                     model.config.serverPostsPushCmd

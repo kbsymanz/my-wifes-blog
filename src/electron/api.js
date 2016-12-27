@@ -10,9 +10,7 @@ const getConfig = () => {
   // Need to return an accurate empty representation
   // so that Elm does not blow up.
   return {
-    serverImagesPullCmd: "",
     serverImagesPushCmd: "",
-    serverPostsPullCmd: "",
     serverPostsPushCmd: "",
     serverTriggerCmd: "",
     postsDirectory: "",

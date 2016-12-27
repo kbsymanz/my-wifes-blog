@@ -16,9 +16,7 @@ type Msg
     | ViewAuthors
     | SelectSettings
       -- Configuration settings.
-    | ServerImagesPullCmd String
     | ServerImagesPushCmd String
-    | ServerPostsPullCmd String
     | ServerPostsPushCmd String
     | ServerTriggerCmd String
     | PostsDirectory String

@@ -15,9 +15,7 @@ import Utils as U
 configToValue : Config -> JE.Value
 configToValue cfg =
     JE.object
-        [ ( "serverImagesPullCmd", JE.string cfg.serverImagesPullCmd )
-        , ( "serverImagesPushCmd", JE.string cfg.serverImagesPushCmd )
-        , ( "serverPostsPullCmd", JE.string cfg.serverPostsPullCmd )
+        [ ( "serverImagesPushCmd", JE.string cfg.serverImagesPushCmd )
         , ( "serverPostsPushCmd", JE.string cfg.serverPostsPushCmd )
         , ( "serverTriggerCmd", JE.string cfg.serverTriggerCmd )
         , ( "postsDirectory", JE.string cfg.postsDirectory )

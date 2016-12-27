@@ -8,7 +8,8 @@ import Time exposing (Time)
 
 type alias Model =
     { posts : Dict Id Post
-    , images : Dict Id Image
+    , masterImages : Dict Id MasterImage
+    , derivedImages : Dict Id DerivedImage
     , authors : Dict Id Author
     , currentAuthor : Id
     , currentPost : Id
@@ -72,6 +73,51 @@ type alias Image =
     }
 
 
+{-| A master image represents a file that the user uploads
+into the application. It is stored without change and is
+considered immutable. Derived images are images that are
+derived from master images. Master images cannot be displayed
+in a post, only derived images can.
+
+id : a unique id for the image.
+sourceFile : the name of the file according to the id that the user originally uploaded.
+width : the width of the original image.
+height : the height of the original image.
+-}
+type alias MasterImage =
+    { id : Id
+    , sourceFile : String
+    , width : Int
+    , height : Int
+    }
+
+
+{-| A derived image represents an image that can be used within
+the application for display in a post. A derived image is always
+created using a master image as a source and applying one or more
+operations upon it and then saving the resulting image as a file
+that is named according to the id. A thumbnail for the derived image
+is also always created and the file name stored.
+
+id : a unique id for the image.
+derivedFile : the name of the resulting file for the image, named according to the id.
+thumbnailFile : the file for the thumbnail representation for this derived image.
+masterImageId : the id of the master image.
+width : the width of the derived image.
+height : the height of the derived image.
+rotation : the rotation of the derived image relative to the rotation of the master image.
+-}
+type alias DerivedImage =
+    { id : Id
+    , derivedFile : String
+    , thumbnailFile : String
+    , masterImageId : Id
+    , width : Int
+    , height : Int
+    , rotation : Int
+    }
+
+
 {-| The view to be displayed in the content area.
 -}
 type ViewContent
@@ -109,11 +155,7 @@ type alias Flags =
 {-| Configuration settings. Allow the user to control them.
 These settings will need to be saved in the app database.
 
-  serverImagesPullCmd: the OS command that pulls images from the server.
-
   serverImagesPushCmd: the OS command that pushes images to the server.
-
-  serverPostsPullCmd: the OS command that pulls posts from the server.
 
   serverPostsPushCmd: the OS command that pushes posts to the server.
 
@@ -131,9 +173,7 @@ These settings will need to be saved in the app database.
   can be populated with actual data, e.g. title, date, author, etc.
 -}
 type alias Config =
-    { serverImagesPullCmd : String
-    , serverImagesPushCmd : String
-    , serverPostsPullCmd : String
+    { serverImagesPushCmd : String
     , serverPostsPushCmd : String
     , serverTriggerCmd : String
     , postsDirectory : String
@@ -157,9 +197,7 @@ type alias Id =
 
 config : Config
 config =
-    { serverImagesPullCmd = ""
-    , serverImagesPushCmd = ""
-    , serverPostsPullCmd = ""
+    { serverImagesPushCmd = ""
     , serverPostsPushCmd = ""
     , serverTriggerCmd = ""
     , postsDirectory = ""
@@ -171,9 +209,10 @@ config =
 
 model : Model
 model =
-    { posts = Dict.fromList [ (emptyPost.id, emptyPost) ]
-    , images = Dict.fromList [ (emptyImage.id, emptyImage) ]
-    , authors = Dict.fromList [ (emptyAuthor.id, emptyAuthor) ]
+    { posts = Dict.fromList [ ( emptyPost.id, emptyPost ) ]
+    , masterImages = Dict.fromList [ ( emptyMasterImage.id, emptyMasterImage ) ]
+    , derivedImages = Dict.fromList [ ( emptyDerivedImage.id, emptyDerivedImage ) ]
+    , authors = Dict.fromList [ ( emptyAuthor.id, emptyAuthor ) ]
     , currentAuthor = 0
     , currentPost = 0
     , defaultAuthor = Nothing
@@ -195,7 +234,6 @@ nextIds =
     }
 
 
-
 emptyPost : Post
 emptyPost =
     { id = 0
@@ -210,15 +248,24 @@ emptyPost =
     }
 
 
-emptyImage : Image
-emptyImage =
-    { id = 0
-    , originalFile = ""
-    , placeholderId = 0
-    , width = 1
-    , height = 1
-    , subtext = ""
-    , placement = Center
+emptyMasterImage : MasterImage
+emptyMasterImage =
+    { id = -1
+    , sourceFile = ""
+    , width = 0
+    , height = 0
+    }
+
+
+emptyDerivedImage : DerivedImage
+emptyDerivedImage =
+    { id = -2
+    , derivedFile = ""
+    , thumbnailFile = ""
+    , masterImageId = -1
+    , width = 0
+    , height = 0
+    , rotation = 0
     }
 
 

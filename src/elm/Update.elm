@@ -61,27 +61,11 @@ update msg model =
         SelectSettings ->
             { model | viewContent = ViewSettings } ! [ clearMessage ]
 
-        ServerImagesPullCmd cmd ->
-            let
-                newConfig =
-                    model.config
-                        |> \c -> { c | serverImagesPullCmd = cmd }
-            in
-                { model | config = newConfig } ! []
-
         ServerImagesPushCmd cmd ->
             let
                 newConfig =
                     model.config
                         |> \c -> { c | serverImagesPushCmd = cmd }
-            in
-                { model | config = newConfig } ! []
-
-        ServerPostsPullCmd cmd ->
-            let
-                newConfig =
-                    model.config
-                        |> \c -> { c | serverPostsPullCmd = cmd }
             in
                 { model | config = newConfig } ! []
 
