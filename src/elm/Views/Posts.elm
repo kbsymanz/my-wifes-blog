@@ -125,7 +125,8 @@ postImages model post =
             [ Html.p [ HA.class "kbsymanz-headingStyle2" ]
                 [ Html.text "Images for this post" ]
             , Html.button
-                [ HE.onClick UploadImage
+                [ HA.class "pure-button"
+                , HE.onClick UploadImage
                 ]
                 [ Html.text "Add a picture" ]
             ]
@@ -152,7 +153,7 @@ postImage model idx image =
                         , Html.div [ HA.class "pure-u-1 one-box vertspace" ]
                             [ Html.text <| "Width: " ++ (toString image.width) ]
                         , Html.button
-                            [ HA.class "pure-u-1 one-box vertspace"
+                            [ HA.class "pure-button vertspace"
                             , HE.onClick <| RemoveImage image.id idx
                             ]
                             [ Html.text "Remove" ]

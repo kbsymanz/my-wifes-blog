@@ -55,18 +55,18 @@ const createMasterImage = (sourceFile, id, imageDirectory) => {
  * param       prefix             - the prefix to use
  * param       width              - the width to resize to
  * param       imageDirectory     - the image directory
+ * param       cb                 - the callback
  * return      targetFilename     - the name of the new file
  * -------------------------------------------------------- */
-const createImage = (sourceFile, id, prefix, width, imageDirectory) => {
+const createImage = (sourceFile, id, prefix, width, imageDirectory, cb) => {
   const targetFilename = prefix + '-' + id + path.extname(sourceFile);
   jimp.read(path.join(imageDirectory, sourceFile), function(err, image) {
     if (err) throw err;
     image.clone()
       .resize(width, jimp.AUTO)
       .write(path.join(imageDirectory, targetFilename));
+    return cb(targetFilename);
   });
-
-  return targetFilename;
 };
 
 

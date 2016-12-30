@@ -122,9 +122,7 @@ const delPost = (id) => {
   localStorage.setItem('posts', JSON.stringify(newPosts));
 };
 
-const uploadImage = (id) => {
-  var masterFile, thumbnailFile, sourceFile;
-
+const uploadImage = (id, cb) => {
   // Get the images directory.
   var iDir = getConfig().imagesDirectory;
 
@@ -136,20 +134,26 @@ const uploadImage = (id) => {
   const width = 600;
   const thumbWidth = 120;
   if (file) {
-    masterFile = createMasterImage(file, id, iDir);
-    thumbnailFile = createImage(masterFile, id, 'thumb', thumbWidth, iDir);
-    sourceFile = createImage(masterFile, id, 'source', width, iDir);
+    // Create the master file.
+    var masterFile = createMasterImage(file, id, iDir);
 
-    return {
-      id: id,
-      masterFile: masterFile,
-      sourceFile: sourceFile,
-      thumbnailFile: thumbnailFile,
-      width: width,
-      rotation: 0
-    };
+    // Create the thumbnail file.
+    return createImage(masterFile, id, 'thumb', thumbWidth, iDir, function(thumbnailFile) {
+
+      // Create the source file.
+      createImage(masterFile, id, 'source', width, iDir, function(sourceFile) {
+        return cb({
+          id: id,
+          masterFile: masterFile,
+          sourceFile: sourceFile,
+          thumbnailFile: thumbnailFile,
+          width: width,
+          rotation: 0
+        });
+      });
+    });
   }
-  return void 0;
+  return cb(void 0);
 };
 
 module.exports = {

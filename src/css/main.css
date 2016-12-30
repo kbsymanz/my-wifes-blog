@@ -116,6 +116,7 @@
 .image-box {
   margin: 0.5em 0 0.5em 0;
   padding: 0.5em 0 0.5em 0;
+  border-bottom: solid 1px #009688;
 }
 .image-box img {
   border: solid 1px #009688;
@@ -124,5 +125,5 @@
   margin: 0.5em 0 0.5em 0;
 }
 .image-box-even {
-  background-color: #EAEDE6;
+  /* background-color: #009688; */
 }

@@ -65,14 +65,9 @@
       });
 
       app.ports.uploadImage.subscribe(function(id) {
-        var image = api.uploadImage(id);
-        if (image) {
-          // Seems Electron loads a bit too quickly, maybe not
-          // everything is flushed to disk properly?
-          setTimeout(function() {
-            app.ports.updateImage.send(image);
-          }, 200);
-        }
+        api.uploadImage(id, function(image) {
+          if (image) app.ports.updateImage.send(image);
+        });
       });
     </script>
   </body>
