@@ -29,6 +29,8 @@
   line-height: 48px;
   letter-spacing: 0;
   opacity: 0.54;
+  -webkit-margin-before: 0;
+  -webkit-margin-after: 0.5;
 }
 .kbsymanz-appHeaderStyle {
   font-family: "Roboto, Helvetica, Arial, Sans-serif";
@@ -59,6 +61,13 @@
   text-align: right;
   height: 1.5em;
   min-height: 1.5em;
+}
+
+/* Misc */
+.larger-bold {
+  font-size: 120%;
+  font-weight: bold;
+  letter-spacing: 0.1em;
 }
 
 /* Forms */
@@ -101,4 +110,19 @@
 }
 .kbsymanz-textfieldString textarea {
   font-size: 1.5em;
+}
+
+/* Images */
+.image-box {
+  margin: 0.5em 0 0.5em 0;
+  padding: 0.5em 0 0.5em 0;
+}
+.image-box img {
+  border: solid 1px #009688;
+}
+.image-box .vertspace {
+  margin: 0.5em 0 0.5em 0;
+}
+.image-box-even {
+  background-color: #EAEDE6;
 }

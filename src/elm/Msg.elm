@@ -1,8 +1,10 @@
 module Msg exposing (Msg(..))
 
-import Material
-import Material.Snackbar as Snackbar
 import Time exposing (Time)
+
+-- LOCAL IMPORTS
+
+import Model exposing (Id, Image)
 
 
 type Msg
@@ -13,7 +15,8 @@ type Msg
     | SelectPost Int
     | SelectAuthor Int
     | ViewPosts
-    | ViewAuthors
+    | EditPosts
+    | EditAuthors
     | SelectSettings
       -- Configuration settings.
     | ServerImagesPushCmd String
@@ -39,3 +42,8 @@ type Msg
     | SavePost
     | NewPost
     | DelPost Int
+      -- Images
+    | UploadImage
+    | UpdateImage (Result String Image)
+    | RemoveImage Id Int
+

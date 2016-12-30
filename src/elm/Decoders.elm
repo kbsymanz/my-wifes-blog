@@ -8,8 +8,24 @@ import Json.Encode as JE
 
 -- LOCAL IMPORTS
 
-import Model exposing (Post)
+import Model exposing (Post, Image)
 import Utils as U
+
+
+imageDecoder : JD.Decoder Image
+imageDecoder =
+    JDP.decode Image
+        |> JDP.required "id" JD.int
+        |> JDP.required "masterFile" JD.string
+        |> JDP.required "sourceFile" JD.string
+        |> JDP.required "thumbnailFile" JD.string
+        |> JDP.required "width" JD.int
+        |> JDP.required "rotation" JD.int
+
+
+decodeImage : JE.Value -> Result String Image
+decodeImage payload =
+    JD.decodeValue imageDecoder payload
 
 
 postDecoder : JD.Decoder Post
@@ -37,7 +53,7 @@ postDecoder =
             |> JDP.required "authorId" JD.int
             |> JDP.required "tags" JD.string
             |> JDP.required "status" JD.string
-            |> JDP.required "images" (JD.list JD.int)
+            |> JDP.required "images" (JD.list imageDecoder)
 
 
 decodePosts : JE.Value -> List Post

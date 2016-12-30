@@ -6,6 +6,7 @@ import Html.Attributes as HA
 import Html.Events as HE
 import List.Extra as LE
 import Material.Icons.Action exposing (settings)
+import Material.Icons.Image exposing (remove_red_eye)
 
 
 -- LOCAL IMPORTS
@@ -39,11 +40,28 @@ headerSmall title model =
 
                 Nothing ->
                     ""
+        ( previewColor, previewMsg ) =
+            case model.viewContent of
+                ViewPost ->
+                    ( Color.white, EditPosts )
+
+                EditPost ->
+                    ( Color.grey, ViewPosts )
+
+                _ ->
+                    ( Color.grey, ViewPosts )
     in
         Html.div [ HA.class "pure-g" ]
-            [ Html.div [ HA.class "pure-u-xl-23-24 pure-u-lg-11-12 pure-u-md-5-6 pure-u-sm-3-4" ]
+            [ Html.div [ HA.class "pure-u-xl-22-24 pure-u-lg-10-12 pure-u-md-4-6 pure-u-sm-2-4" ]
                 [ Html.div [ HA.class "kbsymanz-appHeaderStyle kbsymanz-appHeaderStyle-left" ]
                     [ Html.text title ]
+                ]
+            , Html.div
+                [ HA.class "pure-u-xl-1-24 pure-u-lg-1-12 pure-u-md-1-6 pure-u-sm-1-4"
+                , HE.onClick ViewPosts
+                ]
+                [ Html.div [ HA.class "kbsymanz-appHeaderStyle kbsymanz-appHeaderStyle-right" ]
+                    [ remove_red_eye previewColor 40 ]
                 ]
             , Html.div
                 [ HA.class "pure-u-xl-1-24 pure-u-lg-1-12 pure-u-md-1-6 pure-u-sm-1-4"
@@ -62,10 +80,10 @@ postsAuthorsList model =
     let
         contentFunction =
             case model.viewContent of
-                ViewPost ->
+                EditPost ->
                     VPosts.viewPostsList
 
-                ViewAuthor ->
+                EditAuthor ->
                     VAuthors.viewAuthorsList
 
                 _ ->
@@ -84,13 +102,13 @@ postsAuthorsList model =
                         [ Html.a
                             [ HA.attribute "href" "#"
                             , HA.class "pure-menu-link"
-                            , HE.onClick ViewPosts
+                            , HE.onClick EditPosts
                             ]
                             [ Html.text "Posts" ]
                         ]
                     , Html.li
                         [ HA.class "pure-menu-item"
-                        , if model.viewContent == ViewAuthor then
+                        , if model.viewContent == EditAuthor then
                             HA.class "pure-menu-selected"
                           else
                             HA.class ""
@@ -98,7 +116,7 @@ postsAuthorsList model =
                         [ Html.a
                             [ HA.attribute "href" "#"
                             , HA.class "pure-menu-link"
-                            , HE.onClick ViewAuthors
+                            , HE.onClick EditAuthors
                             ]
                             [ Html.text "Authors" ]
                         ]
@@ -113,12 +131,15 @@ viewContent : Model -> Html Msg
 viewContent model =
     case model.viewContent of
         ViewPost ->
+            VPosts.preview model
+
+        EditPost ->
             VPosts.view model
 
-        ViewAuthor ->
+        EditAuthor ->
             VAuthors.view model
 
-        ViewSettings ->
+        EditSettings ->
             VSettings.view model
 
         ViewNothing ->

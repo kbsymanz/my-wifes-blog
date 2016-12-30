@@ -1,3 +1,9 @@
+const { remote } = require('electron');
+const {
+  createImage,
+  createMasterImage,
+  showOpenImageFileDialog
+} = remote.require('./serverApi.js');
 
 const saveConfig = (cfg) => {
   localStorage.setItem('config', JSON.stringify(cfg));
@@ -116,6 +122,36 @@ const delPost = (id) => {
   localStorage.setItem('posts', JSON.stringify(newPosts));
 };
 
+const uploadImage = (id) => {
+  var masterFile, thumbnailFile, sourceFile;
+
+  // Get the images directory.
+  var iDir = getConfig().imagesDirectory;
+
+  // Allow user to select one file.
+  var file = showOpenImageFileDialog()[0];
+
+  // Generate master file, thumbnail file, and starting source file
+  // with hard-coded width (for now).
+  const width = 600;
+  const thumbWidth = 120;
+  if (file) {
+    masterFile = createMasterImage(file, id, iDir);
+    thumbnailFile = createImage(masterFile, id, 'thumb', thumbWidth, iDir);
+    sourceFile = createImage(masterFile, id, 'source', width, iDir);
+
+    return {
+      id: id,
+      masterFile: masterFile,
+      sourceFile: sourceFile,
+      thumbnailFile: thumbnailFile,
+      width: width,
+      rotation: 0
+    };
+  }
+  return void 0;
+};
+
 module.exports = {
   getConfig: getConfig,
   saveConfig: saveConfig,
@@ -128,5 +164,6 @@ module.exports = {
   saveDefaultAuthor: saveDefaultAuthor,
   savePost: savePost,
   getPosts: getPosts,
-  delPost: delPost
+  delPost: delPost,
+  uploadImage: uploadImage
 };

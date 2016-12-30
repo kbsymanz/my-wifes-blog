@@ -12,6 +12,7 @@ import Time
 import Decoders
 import Model exposing (..)
 import Msg exposing (..)
+import Ports
 import Update
 import Utils as U
 import View as View
@@ -50,4 +51,6 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Time.every Time.second Tick
+        , Ports.updateImage Decoders.decodeImage
+            |> Sub.map UpdateImage
         ]

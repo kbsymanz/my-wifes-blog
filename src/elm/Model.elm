@@ -8,8 +8,6 @@ import Time exposing (Time)
 
 type alias Model =
     { posts : Dict Id Post
-    , masterImages : Dict Id MasterImage
-    , derivedImages : Dict Id DerivedImage
     , authors : Dict Id Author
     , currentAuthor : Id
     , currentPost : Id
@@ -33,7 +31,7 @@ type alias Post =
     , authorId : Id
     , tags : String
     , status : PostStatus
-    , images : List Id
+    , images : List Image
     }
 
 
@@ -44,76 +42,25 @@ type alias NextIds =
     }
 
 
-{-| Image structure that application tracks and saves to disk.
+{-| Represents an image in a post. Each image across all posts has a
+unique id. The original image is saved as the masterFile and is not
+changed. Changes are applied to the sourceFile and repeated changes
+are allowed. The thumbnailFile is also created from the masterFile and
+is recreated whenever rotation is applied.
 
-  id: unique id across all images.
-
-  originalFile: the full path to the file that the user selected.
-
-  placeholdId: a short, unique within a post, id for the user to
-  use in placing images.
-
-  width: actual width, recorded for convenience of UI.
-
-  height: actual height, recorded for convenience of UI.
-
-  subtext: text that the user wants to display under the image.
-
-  placement: Left, Center, or Right.
-
+id : a unique id for the image.
+masterFile : the name of the file that the user originally uploaded, named by id.
+sourceFile : the name of the file that was adjusted from the original, named by id.
+thumbnailFile : the name of the file thumbnail file according to the id.
+width : the width of the original image. We don't care about the height.
+rotation : the rotation from the original file that is applied.
 -}
 type alias Image =
     { id : Id
-    , originalFile : String
-    , placeholderId : Id
-    , width : Int
-    , height : Int
-    , subtext : String
-    , placement : Placement
-    }
-
-
-{-| A master image represents a file that the user uploads
-into the application. It is stored without change and is
-considered immutable. Derived images are images that are
-derived from master images. Master images cannot be displayed
-in a post, only derived images can.
-
-id : a unique id for the image.
-sourceFile : the name of the file according to the id that the user originally uploaded.
-width : the width of the original image.
-height : the height of the original image.
--}
-type alias MasterImage =
-    { id : Id
+    , masterFile : String
     , sourceFile : String
-    , width : Int
-    , height : Int
-    }
-
-
-{-| A derived image represents an image that can be used within
-the application for display in a post. A derived image is always
-created using a master image as a source and applying one or more
-operations upon it and then saving the resulting image as a file
-that is named according to the id. A thumbnail for the derived image
-is also always created and the file name stored.
-
-id : a unique id for the image.
-derivedFile : the name of the resulting file for the image, named according to the id.
-thumbnailFile : the file for the thumbnail representation for this derived image.
-masterImageId : the id of the master image.
-width : the width of the derived image.
-height : the height of the derived image.
-rotation : the rotation of the derived image relative to the rotation of the master image.
--}
-type alias DerivedImage =
-    { id : Id
-    , derivedFile : String
     , thumbnailFile : String
-    , masterImageId : Id
     , width : Int
-    , height : Int
     , rotation : Int
     }
 
@@ -121,9 +68,10 @@ type alias DerivedImage =
 {-| The view to be displayed in the content area.
 -}
 type ViewContent
-    = ViewPost
-    | ViewAuthor
-    | ViewSettings
+    = EditPost
+    | ViewPost
+    | EditAuthor
+    | EditSettings
     | ViewNothing
 
 
@@ -210,8 +158,6 @@ config =
 model : Model
 model =
     { posts = Dict.fromList [ ( emptyPost.id, emptyPost ) ]
-    , masterImages = Dict.fromList [ ( emptyMasterImage.id, emptyMasterImage ) ]
-    , derivedImages = Dict.fromList [ ( emptyDerivedImage.id, emptyDerivedImage ) ]
     , authors = Dict.fromList [ ( emptyAuthor.id, emptyAuthor ) ]
     , currentAuthor = 0
     , currentPost = 0
@@ -248,23 +194,13 @@ emptyPost =
     }
 
 
-emptyMasterImage : MasterImage
-emptyMasterImage =
+emptyImage : Image
+emptyImage =
     { id = -1
+    , masterFile = ""
     , sourceFile = ""
-    , width = 0
-    , height = 0
-    }
-
-
-emptyDerivedImage : DerivedImage
-emptyDerivedImage =
-    { id = -2
-    , derivedFile = ""
     , thumbnailFile = ""
-    , masterImageId = -1
     , width = 0
-    , height = 0
     , rotation = 0
     }
 

@@ -24,3 +24,4 @@ function createMainWindow() {
     mainWindow = null;
   });
 }
+

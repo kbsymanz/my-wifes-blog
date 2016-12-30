@@ -9,7 +9,7 @@ import Task
 -- LOCAL IMPORTS
 
 import Encoders
-import Model exposing (Model, Author, Post, Id, NextIds, ViewContent(..), PostStatus(..))
+import Model exposing (Model, Author, Post, Id, Image, NextIds, ViewContent(..), PostStatus(..))
 import Msg exposing (Msg(..))
 import Ports
 
@@ -29,7 +29,7 @@ update msg model =
                     else
                         { model | userMessage = Nothing, userMessageTime = 0 }
             in
-             newModel ! []
+                newModel ! []
 
         Tick time ->
             { model | currentTime = time } ! []
@@ -37,11 +37,14 @@ update msg model =
         ViewPosts ->
             { model | viewContent = ViewPost } ! []
 
-        ViewAuthors ->
-            { model | viewContent = ViewAuthor } ! []
+        EditPosts ->
+            { model | viewContent = EditPost } ! []
+
+        EditAuthors ->
+            { model | viewContent = EditAuthor } ! []
 
         SelectPost id ->
-            { model | currentPost = id, viewContent = ViewPost } ! [ clearMessage ]
+            { model | currentPost = id, viewContent = EditPost } ! [ clearMessage ]
 
         SelectAuthor id ->
             let
@@ -51,7 +54,7 @@ update msg model =
                 newModel =
                     case author of
                         Just a ->
-                            { model | viewContent = ViewAuthor, currentAuthor = a.id }
+                            { model | viewContent = EditAuthor, currentAuthor = a.id }
 
                         Nothing ->
                             model
@@ -59,7 +62,7 @@ update msg model =
                 newModel ! [ clearMessage ]
 
         SelectSettings ->
-            { model | viewContent = ViewSettings } ! [ clearMessage ]
+            { model | viewContent = EditSettings } ! [ clearMessage ]
 
         ServerImagesPushCmd cmd ->
             let
@@ -289,7 +292,7 @@ update msg model =
                 ( updatedModel, updatedCmd ) =
                     update (SelectPost id) model
             in
-                { updatedModel | posts = posts, nextIds = nextIds, viewContent = ViewPost }
+                { updatedModel | posts = posts, nextIds = nextIds, viewContent = EditPost }
                     ! [ saveNextIdsCmd nextIds, updatedCmd ]
 
         DelPost id ->
@@ -313,10 +316,91 @@ update msg model =
                 { model | posts = newPosts, currentPost = newCurrentPost }
                     ! [ Ports.delPost <| Encoders.idToValue id ]
 
+        UploadImage ->
+            let
+                id =
+                    model.nextIds.nextImageId
+
+                nextIds =
+                    NextIds model.nextIds.nextAuthorId model.nextIds.nextPostId (id + 1)
+
+                image =
+                    Image id "" "" "" 0 0
+
+                newPosts =
+                    Dict.update model.currentPost
+                        (\post ->
+                            case post of
+                                Just p ->
+                                    Just { p | images = p.images ++ [ image ] }
+
+                                Nothing ->
+                                    post
+                        )
+                        model.posts
+            in
+                ( { model | posts = newPosts, nextIds = nextIds }
+                , Cmd.batch [ uploadImageCmd id, saveNextIdsCmd nextIds ]
+                )
+
+        UpdateImage img ->
+            let
+                newPosts =
+                    case img of
+                        Ok image ->
+                            Dict.update model.currentPost
+                                (\post ->
+                                    case post of
+                                        Just p ->
+                                            let
+                                                images =
+                                                    List.map
+                                                        (\i ->
+                                                            if i.id == image.id then
+                                                                image
+                                                            else
+                                                                i
+                                                        )
+                                                        p.images
+                                            in
+                                                Just { p | images = images }
+
+                                        Nothing ->
+                                            post
+                                )
+                                model.posts
+
+                        Err str ->
+                            model.posts
+            in
+                ( { model | posts = newPosts }, Task.perform (always SavePost) (Task.succeed True) )
+
+        RemoveImage postId idx ->
+            let
+                -- TODO: handle references to images in post.body.
+                newPosts =
+                    Dict.update model.currentPost
+                        (\post ->
+                            case post of
+                                Just p ->
+                                    let
+                                        images =
+                                            List.take idx p.images
+                                                ++ List.drop (idx + 1) p.images
+                                    in
+                                        Just { p | images = images }
+
+                                Nothing ->
+                                    post
+                        )
+                        model.posts
+            in
+                ( { model | posts = newPosts }, Task.perform (always SavePost) (Task.succeed True) )
+
 
 clearMessage : Cmd Msg
 clearMessage =
-        Task.perform (\_ -> ClearMessage) (Task.succeed True)
+    Task.perform (\_ -> ClearMessage) (Task.succeed True)
 
 
 setMessage : String -> Cmd Msg
@@ -327,6 +411,11 @@ setMessage msg =
 saveNextIdsCmd : NextIds -> Cmd msg
 saveNextIdsCmd nextIds =
     Ports.saveNextIds <| Encoders.nextIdsToValue nextIds
+
+
+uploadImageCmd : Int -> Cmd msg
+uploadImageCmd id =
+    Ports.uploadImage <| Encoders.imageIdFilepathToValue id
 
 
 updateAuthorFirst : Id -> String -> Model -> Model

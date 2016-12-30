@@ -1,14 +1,12 @@
 module Encoders exposing (..)
 
-
 import Date
 import Json.Encode as JE
 
 
-
 -- LOCAL IMPORTS
 
-import Model exposing (Config, Author, NextIds, Id, Post)
+import Model exposing (Config, Author, NextIds, Id, Post, Image)
 import Utils as U
 
 
@@ -59,6 +57,18 @@ defaultAuthorToValue defaultAuthor =
             JE.null
 
 
+imageToValue : Image -> JE.Value
+imageToValue image =
+    JE.object
+        [ ( "id", JE.int image.id )
+        , ( "masterFile", JE.string image.masterFile )
+        , ( "sourceFile", JE.string image.sourceFile )
+        , ( "thumbnailFile", JE.string image.thumbnailFile )
+        , ( "width", JE.int image.width )
+        , ( "rotation", JE.int image.rotation )
+        ]
+
+
 postToValue : Post -> JE.Value
 postToValue post =
     JE.object
@@ -70,9 +80,15 @@ postToValue post =
         , ( "authorId", JE.int post.authorId )
         , ( "tags", JE.string post.tags )
         , ( "status", JE.string (U.postStatusToString post.status) )
-        , ( "images", JE.list <| List.map (\i -> JE.int i) post.images )
+        , ( "images", JE.list <| List.map (\i -> imageToValue i) post.images )
         ]
+
 
 idToValue : Id -> JE.Value
 idToValue id =
+    JE.int id
+
+
+imageIdFilepathToValue : Int -> JE.Value
+imageIdFilepathToValue id =
     JE.int id
