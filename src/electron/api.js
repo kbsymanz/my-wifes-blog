@@ -1,3 +1,4 @@
+const path = require('path');
 const { remote } = require('electron');
 const {
   createImage,
@@ -122,18 +123,26 @@ const delPost = (id) => {
   localStorage.setItem('posts', JSON.stringify(newPosts));
 };
 
+// Save the last path used for this session for selecting images.
+// Saves the user having to navigate multiple directories for
+// more than one image.
+var lastPathUsed = '';
+
 const uploadImage = (id, cb) => {
   // Get the images directory.
   var iDir = getConfig().imagesDirectory;
 
   // Allow user to select one file.
-  var file = showOpenImageFileDialog()[0];
+  var file = showOpenImageFileDialog(lastPathUsed)[0];
 
   // Generate master file, thumbnail file, and starting source file
   // with hard-coded width (for now).
   const width = 600;
   const thumbWidth = 120;
   if (file) {
+    // Save the path for next time.
+    lastPathUsed = path.dirname(file);
+
     // Create the master file.
     var masterFile = createMasterImage(file, id, iDir);
 

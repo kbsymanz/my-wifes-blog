@@ -11,8 +11,10 @@ const path = require('path');
 const jimp = require('jimp');
 
 
-const showOpenImageFileDialog = () => {
+const showOpenImageFileDialog = (startingPath='') => {
   const files = dialog.showOpenDialog({
+    title: 'Choose an image',
+    defaultPath: startingPath,
     properties: ['openFile'],
     filters: [
       { name: 'Image files', extensions: ['jpg','png'] }
