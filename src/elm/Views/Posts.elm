@@ -90,7 +90,7 @@ replaceImages post model =
                         ++ "'></img></p>"
 
                 Nothing ->
-                    ""
+                    "<pre>Sorry, image " ++ idx ++ " was not found. Did you add it to the post?</pre>"
     in
         RX.replace RX.All
             (RX.regex "<<(.*)>>")

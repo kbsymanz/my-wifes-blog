@@ -132,8 +132,9 @@ const uploadImage = (id, cb) => {
   // Get the images directory.
   var iDir = getConfig().imagesDirectory;
 
-  // Allow user to select one file.
-  var file = showOpenImageFileDialog(lastPathUsed)[0];
+  // Allow user to select one for now, but can handle
+  // multiple files when the Elm side is ready for it.
+  var file = showOpenImageFileDialog(lastPathUsed, false)[0];
 
   // Generate master file, thumbnail file, and starting source file
   // with hard-coded width (for now).

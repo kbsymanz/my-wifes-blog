@@ -40,6 +40,7 @@ headerSmall title model =
 
                 Nothing ->
                     ""
+
         ( previewColor, previewMsg, previewLabel ) =
             case model.viewContent of
                 ViewPost ->
@@ -52,26 +53,29 @@ headerSmall title model =
                     ( Color.grey, ViewPosts, "Editing" )
     in
         Html.div [ HA.class "pure-g" ]
-            [ Html.div [ HA.class "pure-u-xl-22-24 pure-u-lg-10-12 pure-u-md-4-6 pure-u-sm-2-4" ]
+            [ Html.div
+                [ HA.class "pure-u-xl-22-24 pure-u-lg-2-3 pure-u-md-2-3 pure-u-sm-1-2" ]
                 [ Html.div [ HA.class "kbsymanz-appHeaderStyle kbsymanz-appHeaderStyle-left" ]
                     [ Html.text title ]
                 ]
             , Html.div
-                [ HA.class "pure-u-xl-1-24 pure-u-lg-1-12 pure-u-md-1-6 pure-u-sm-1-4"
+                [ HA.class "pure-u-xl-1-24 pure-u-lg-1-6 pure-u-md-1-6 pure-u-sm-1-4"
                 , HE.onClick previewMsg
                 ]
                 [ Html.div [ HA.class "kbsymanz-appHeaderStyle kbsymanz-appHeaderStyle-right" ]
-                    [ remove_red_eye previewColor 40
+                    [ Html.div [ HA.class "kbsymanz-appHeaderStyleSmall" ]
+                        [ remove_red_eye previewColor 40 ]
                     , Html.div [ HA.class "kbsymanz-appHeaderStyleSmall" ]
                         [ Html.text previewLabel ]
                     ]
                 ]
             , Html.div
-                [ HA.class "pure-u-xl-1-24 pure-u-lg-1-12 pure-u-md-1-6 pure-u-sm-1-4"
+                [ HA.class "pure-u-xl-1-24 pure-u-lg-1-6 pure-u-md-1-6 pure-u-sm-1-4"
                 , HE.onClick SelectSettings
                 ]
                 [ Html.div [ HA.class "kbsymanz-appHeaderStyle kbsymanz-appHeaderStyle-right" ]
-                    [ settings Color.grey 40
+                    [ Html.div [ HA.class "kbsymanz-appHeaderStyleSmall" ]
+                        [ settings Color.grey 40 ]
                     , Html.div [ HA.class "kbsymanz-appHeaderStyleSmall" ]
                         [ Html.text "Settings" ]
                     ]

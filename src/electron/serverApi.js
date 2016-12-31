@@ -11,13 +11,15 @@ const path = require('path');
 const jimp = require('jimp');
 
 
-const showOpenImageFileDialog = (startingPath='') => {
+const showOpenImageFileDialog = (startingPath='', multi=false) => {
+  var properties = ['openFile'];
+  if (multi) properties.push('multiSelections');
   const files = dialog.showOpenDialog({
     title: 'Choose an image',
     defaultPath: startingPath,
-    properties: ['openFile'],
+    properties: properties,
     filters: [
-      { name: 'Image files', extensions: ['jpg','png'] }
+      { name: 'Image files', extensions: ['jpg','png','JPG','PNG'] }
     ]
   });
   if (files) return files;
