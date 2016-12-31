@@ -44,7 +44,15 @@ update msg model =
             { model | viewContent = EditAuthor } ! []
 
         SelectPost id ->
-            { model | currentPost = id, viewContent = EditPost } ! [ clearMessage ]
+            let
+                viewContent =
+                    case model.viewContent of
+                        ViewPost ->
+                            ViewPost
+                        _ ->
+                            EditPost
+            in
+                { model | currentPost = id, viewContent = viewContent } ! [ clearMessage ]
 
         SelectAuthor id ->
             let

@@ -51,6 +51,15 @@
 .kbsymanz-appHeaderStyle-right {
   padding-right: 0.5em;
 }
+.kbsymanz-appHeaderStyleSmall {
+  font-size: 12px;
+  margin: 0;
+  padding: 0;
+  line-height: 12px;
+  text-align: center;
+  position: relative;
+  top: -12px;
+}
 .kbsymanz-appHeaderUserMessage {
   background-color: #009688;  /* teal */
   color: #DADDD6; /* off white */

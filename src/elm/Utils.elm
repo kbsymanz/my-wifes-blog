@@ -1,6 +1,6 @@
 module Utils exposing (..)
 
-import Date
+import Date exposing (Date)
 import Dict exposing (Dict)
 import Html exposing (Html)
 import Material
@@ -79,6 +79,15 @@ dayToString day =
             "Sunday"
 
 
+displayDate : Date -> String
+displayDate date =
+    (monthToString <| Date.month date)
+        ++ " "
+        ++ (toString <| Date.day date)
+        ++ ", "
+        ++ (toString <| Date.year date)
+
+
 authorsFromList : List Author -> Dict Id Author
 authorsFromList authors =
     Dict.fromList <| List.map (\a -> ( a.id, a )) authors
@@ -102,15 +111,16 @@ stringToPostStatus str =
     case str of
         "NotPublished" ->
             NotPublished
+
         "Published" ->
             Published
+
         "PublishedButChanged" ->
             PublishedButChanged
+
         _ ->
             let
                 _ =
                     Debug.log "stringToPostStatus" <| "Error: unknown value passed: " ++ str
             in
                 Published
-
-

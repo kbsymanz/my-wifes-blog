@@ -5,6 +5,10 @@ import Dict exposing (Dict)
 import Html exposing (Html)
 import Html.Attributes as HA
 import Html.Events as HE
+import List.Extra as LE
+import Markdown as MD
+import Regex as RX
+import String
 
 
 -- LOCAL IMPORTS
@@ -37,14 +41,77 @@ preview model =
     in
         content
 
+
 previewPost : Post -> Model -> Html Msg
 previewPost post model =
-    -- TODO:
-    -- 1. import Markdown
-    -- 2. apply the CSS
-    -- 3. Once in preview mode, stay there across posts unless switched.
-    Html.text <| "Previewing " ++ post.title
+    Html.div
+        []
+        [ Html.h2 [ HA.class "post-title" ]
+            [ Html.a []
+                [ Html.text post.title ]
+            ]
+        , Html.div [ HA.class "post-meta-moddate" ]
+            [ Html.text <| U.displayDate post.mDate ]
+        , MD.toHtml [ HA.class "post-contents" ] <| replaceImages post model
+        ]
 
+
+replaceImages : Post -> Model -> String
+replaceImages post model =
+    let
+        getSourceFile : String -> Maybe String
+        getSourceFile idx =
+            let
+                index =
+                    case String.toInt idx of
+                        Ok i ->
+                            i
+
+                        Err s ->
+                            -100
+            in
+                case
+                    LE.getAt index post.images
+                of
+                    Just i ->
+                        Just i.sourceFile
+
+                    Nothing ->
+                        Nothing
+
+        getImg : String -> String
+        getImg idx =
+            case getSourceFile idx of
+                Just sf ->
+                    "<p><img src='"
+                        ++ model.config.imagesDirectory
+                        ++ "/"
+                        ++ sf
+                        ++ "'></img></p>"
+
+                Nothing ->
+                    ""
+    in
+        RX.replace RX.All
+            (RX.regex "<<(.*)>>")
+            (\match ->
+                let
+                    imgElement =
+                        case List.head match.submatches of
+                            Just idx ->
+                                case idx of
+                                    Just index ->
+                                        getImg index
+
+                                    Nothing ->
+                                        ""
+
+                            Nothing ->
+                                ""
+                in
+                    imgElement
+            )
+            post.body
 
 
 view : Model -> Html Msg
@@ -149,7 +216,7 @@ postImage model idx image =
                 [ Html.div [ HA.class "pure-u-1-2 one-box" ]
                     [ Html.div [ HA.class "pure-g" ]
                         [ Html.div [ HA.class "pure-u-1 one-box larger-bold vertspace" ]
-                            [ Html.text <| "[[" ++ (toString idx) ++ "]]" ]
+                            [ Html.text <| "<<" ++ (toString idx) ++ ">>" ]
                         , Html.div [ HA.class "pure-u-1 one-box vertspace" ]
                             [ Html.text <| "Width: " ++ (toString image.width) ]
                         , Html.button

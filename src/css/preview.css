@@ -1,0 +1,248 @@
+/* Colors
+ * #6181C0
+ * #FFB073
+ * #FFE573
+ * #854521 - Coffee color background of current website.
+ */
+/*
+ * This is the chosen theme, Theme 3 below.
+ * https://color.adobe.com/Coffee-stain-color-theme-2619605/
+ *
+ *
+ * https://color.adobe.com/coffee-break-color-theme-90894/
+ * #332822, #FF9F8F, #F2DFBC, #8D9E71, #7F7E60
+ *
+ * Kirsten likes these two instead.
+ * https://color.adobe.com/Coffee-color-theme-1492952/
+ * https://color.adobe.com/Coffee-Cup-color-theme-3363000/
+ *
+ * Beth likes these two colors best.
+ * https://color.adobe.com/Coffee-stain-color-theme-2619605/
+ * https://color.adobe.com/Coffee-Cup-color-theme-3363000/
+ *
+ * https://color.adobe.com/Scotts-Coffee-color-theme-984881/
+ * https://color.adobe.com/Coffee-color-theme-2485769/
+ */
+/* Theme 1
+https://color.adobe.com/Coffee-Cup-color-theme-3363000/ */
+/* Theme 2
+https://color.adobe.com/Coffee-color-theme-1492952/ */
+/* Theme 3
+https://color.adobe.com/Coffee-stain-color-theme-2619605/ */
+/* DOM Element coloration */
+/* Container */
+.container {
+  background-color: #f5ecc3;
+}
+#outer-header {
+  margin-top: 10px;
+  padding: 15px 20px;
+  background-color: #ca902c;
+  border-top: 4px solid #4f2512;
+  border-bottom: 4px solid #4f2512;
+}
+.page-header {
+  border-bottom: none !important;
+  position: relative;
+  /* needed to position coffee image */
+  /* A bit classier */
+  /* This is the font chosen by Beth and I for the title and sub-title. */
+  font-family: 'Poiret One', cursive;
+  /* Loose but not too loose */
+  /*font-family: 'Comfortaa', cursive;*/
+  /* Fun */
+  /*font-family: 'Eagle Lake', cursive;*/
+  /*font-family: 'Peralta', cursive;*/
+  /* Bit messed up */
+  /*font-family: 'Special Elite', cursive;*/
+  /* Less serious */
+  /*font-family: 'Short Stack', cursive;*/
+  /*font-family: 'McLaren', cursive;*/
+}
+.page-header a {
+  text-decoration: none;
+}
+#title-image {
+  position: absolute;
+  right: 0;
+  bottom: -15px;
+}
+/* Title/Sub title for the whole site. */
+#title {
+  color: #f5ecc3;
+  margin-bottom: 0;
+  padding-bottom: 0;
+  padding-right: 80px;
+  font-size: 38pt;
+  font-weight: 800;
+}
+#sub-title {
+  color: #4f2512;
+  font-style: italic;
+  font-weight: 100;
+  font-size: 26pt;
+  margin-top: 0;
+  padding-top: 0;
+  padding-left: 20px;
+}
+.colortest-outer {
+  display: none;
+  margin-top: 20px;
+  height: 30px;
+  max-height: 30px;
+  width: 600px;
+  color: black;
+}
+.colortest {
+  width: 120px;
+  min-width: 120px;
+  height: 100%;
+  display: inline;
+  padding: 15px 10px;
+  color: white;
+}
+.t1-color1 {
+  background-color: #7f6a5c;
+}
+.t1-color2 {
+  background-color: #ffa76b;
+}
+.t1-color3 {
+  background-color: #ffd4b8;
+}
+.t1-color4 {
+  background-color: #7f5336;
+}
+.t1-color5 {
+  background-color: #ccaa93;
+}
+.t2-color1 {
+  background-color: #00010d;
+}
+.t2-color2 {
+  background-color: #301e1c;
+}
+.t2-color3 {
+  background-color: #916345;
+}
+.t2-color4 {
+  background-color: #edba8a;
+}
+.t2-color5 {
+  background-color: #f2f2f2;
+}
+.t3-color1 {
+  background-color: #f5ecc3;
+}
+.t3-color2 {
+  background-color: #e9cf92;
+}
+.t3-color3 {
+  background-color: #ca902c;
+}
+.t3-color4 {
+  background-color: #904420;
+}
+.t3-color5 {
+  background-color: #4f2512;
+}
+/* panels in general */
+.panel > .panel-heading {
+  color: #f5ecc3 !important;
+  background-color: #904420;
+  font-size: 120%;
+}
+/* postsList: list of posts on the right */
+/* newslettersList: list of newsletters on the right */
+#postsList,
+#newslettersList {
+  margin-top: 20px;
+}
+#postsList .panel-heading,
+#newslettersList .panel-heading {
+  color: #4f2512;
+  border-top: 1px solid #4f2512;
+  border-left: 1px solid #4f2512;
+  border-right: 1px solid #4f2512;
+}
+#postsList .panel-body,
+#newslettersList .panel-body {
+  padding-left: 0;
+  background-color: #f5ecc3;
+  border-left: 1px solid #4f2512;
+  border-right: 1px solid #4f2512;
+  border-bottom: 1px solid #4f2512;
+}
+ul.postsList {
+  list-style-type: none !important;
+  padding-left: 15px;
+}
+ul.postsList a {
+  color: #ca902c;
+}
+ul.postsList a:hover {
+  color: #904420;
+  text-decoration: none;
+}
+/* Posts */
+.post-title {
+  border-top: 3px solid #ca902c;
+  padding: 10px 0 5px 5px;
+}
+.post-title a {
+  color: #ca902c;
+}
+.post-title a:hover {
+  color: #904420;
+  text-decoration: none;
+}
+.post-meta-moddate {
+  width: 100%;
+  text-align: right;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #ca902c;
+}
+.post-contents {
+  font-size: 120%;
+  margin-bottom: 50px;
+  padding: 30px 20px;
+  border-left: 3px solid #4f2512;
+  border-right: 3px solid #4f2512;
+  border-top: 3px solid #4f2512;
+  border-bottom: 3px solid #4f2512;
+  background-color: white;
+}
+pre {
+  border: none;
+  background-color: white;
+  margin-left: 20px;
+}
+pre code.lang-verse {
+  font-size: 110%;
+  font-weight: bold;
+  font-style: italic;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+/* page links to older and newer posts */
+.page-links {
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+.page-links a {
+  color: #ca902c;
+  font-size: 120%;
+}
+.page-links a:hover {
+  color: #904420;
+  text-decoration: none;
+  font-size: 120%;
+}
+/* footer */
+#footer {
+  margin-top: 30px;
+}
+#footer-inner {
+  color: #4f2512;
+  background-color: #ca902c;
+}

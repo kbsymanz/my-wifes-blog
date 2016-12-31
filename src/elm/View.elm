@@ -40,16 +40,16 @@ headerSmall title model =
 
                 Nothing ->
                     ""
-        ( previewColor, previewMsg ) =
+        ( previewColor, previewMsg, previewLabel ) =
             case model.viewContent of
                 ViewPost ->
-                    ( Color.white, EditPosts )
+                    ( Color.white, EditPosts, "Previewing" )
 
                 EditPost ->
-                    ( Color.grey, ViewPosts )
+                    ( Color.grey, ViewPosts, "Editing" )
 
                 _ ->
-                    ( Color.grey, ViewPosts )
+                    ( Color.grey, ViewPosts, "Editing" )
     in
         Html.div [ HA.class "pure-g" ]
             [ Html.div [ HA.class "pure-u-xl-22-24 pure-u-lg-10-12 pure-u-md-4-6 pure-u-sm-2-4" ]
@@ -58,17 +58,23 @@ headerSmall title model =
                 ]
             , Html.div
                 [ HA.class "pure-u-xl-1-24 pure-u-lg-1-12 pure-u-md-1-6 pure-u-sm-1-4"
-                , HE.onClick ViewPosts
+                , HE.onClick previewMsg
                 ]
                 [ Html.div [ HA.class "kbsymanz-appHeaderStyle kbsymanz-appHeaderStyle-right" ]
-                    [ remove_red_eye previewColor 40 ]
+                    [ remove_red_eye previewColor 40
+                    , Html.div [ HA.class "kbsymanz-appHeaderStyleSmall" ]
+                        [ Html.text previewLabel ]
+                    ]
                 ]
             , Html.div
                 [ HA.class "pure-u-xl-1-24 pure-u-lg-1-12 pure-u-md-1-6 pure-u-sm-1-4"
                 , HE.onClick SelectSettings
                 ]
                 [ Html.div [ HA.class "kbsymanz-appHeaderStyle kbsymanz-appHeaderStyle-right" ]
-                    [ settings Color.grey 40 ]
+                    [ settings Color.grey 40
+                    , Html.div [ HA.class "kbsymanz-appHeaderStyleSmall" ]
+                        [ Html.text "Settings" ]
+                    ]
                 ]
             , Html.div [ HA.class "pure-u-1 one-box kbsymanz-appHeaderUserMessage" ]
                 [ Html.text uMsg ]
