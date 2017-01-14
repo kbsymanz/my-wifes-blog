@@ -89,6 +89,18 @@ type PostStatus
     | PublishedButChanged
 
 
+type alias PublishPost =
+    { id : Id
+    , content : String
+    }
+
+
+type alias PublishPostResponse =
+    { id : Id
+    , success : Bool
+    }
+
+
 {-| What is passed into the Elm app at application start.
 -}
 type alias Flags =

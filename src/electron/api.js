@@ -3,7 +3,8 @@ const { remote } = require('electron');
 const {
   createImage,
   createMasterImage,
-  showOpenImageFileDialog
+  showOpenImageFileDialog,
+  serverPublish
 } = remote.require('./serverApi.js');
 
 const saveConfig = (cfg) => {
@@ -170,6 +171,15 @@ const uploadImage = (id, cb) => {
   return cb(void 0);
 };
 
+const publish = (id, postContent, cb) => {
+  // TODO:
+  // 3. Gather full path references for all images into an array.
+  // 4. Get remote paths for post and images
+  // 5. Get the trigger command.
+  return cb(true);
+
+};
+
 module.exports = {
   getConfig: getConfig,
   saveConfig: saveConfig,
@@ -183,5 +193,6 @@ module.exports = {
   savePost: savePost,
   getPosts: getPosts,
   delPost: delPost,
-  uploadImage: uploadImage
+  uploadImage: uploadImage,
+  publish: publish
 };

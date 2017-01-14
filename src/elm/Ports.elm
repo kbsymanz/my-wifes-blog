@@ -16,6 +16,9 @@ import Model exposing (Image)
 port updateImage : (JD.Value -> msg) -> Sub msg
 
 
+port publishPostResponse : (JD.Value -> msg) -> Sub msg
+
+
 
 -- Outgoing ports
 

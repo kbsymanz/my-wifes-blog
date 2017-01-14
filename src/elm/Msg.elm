@@ -4,7 +4,7 @@ import Time exposing (Time)
 
 -- LOCAL IMPORTS
 
-import Model exposing (Id, Image)
+import Model exposing (Id, Image, PublishPost, PublishPostResponse)
 
 
 type Msg
@@ -46,7 +46,8 @@ type Msg
     | SavePost
     | NewPost
     | DelPost Int
-    | PublishPost Int
+    | PublishPostMsg Int
+    | PublishPostResponseMsg (Result String PublishPostResponse)
       -- Images
     | UploadImage
     | UpdateImage (Result String Image)

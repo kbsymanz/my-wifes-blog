@@ -6,7 +6,7 @@ import Json.Encode as JE
 
 -- LOCAL IMPORTS
 
-import Model exposing (Config, Author, NextIds, Id, Post, Image)
+import Model exposing (Config, Author, NextIds, Id, Post, Image, PublishPost)
 import Utils as U
 
 
@@ -96,3 +96,11 @@ idToValue id =
 imageIdFilepathToValue : Int -> JE.Value
 imageIdFilepathToValue id =
     JE.int id
+
+
+encodePublishPost : PublishPost -> JE.Value
+encodePublishPost publishPost =
+    JE.object
+        [ ( "id", JE.int publishPost.id )
+        , ( "content", JE.string publishPost.content )
+        ]

@@ -3,14 +3,16 @@ module Utils exposing (..)
 import Date exposing (Date)
 import Dict exposing (Dict)
 import Html exposing (Html)
+import List.Extra as LE
 import Material
 import Material.Options as Options
 import Material.Textfield as Textfield
+import Regex as RX
 
 
 -- LOCAL IMPORTS
 
-import Model exposing (Id, Author, PostStatus(..))
+import Model exposing (Model, Post, Id, Author, PostStatus(..))
 import Msg exposing (..)
 
 
@@ -52,6 +54,45 @@ monthToString month =
 
         Date.Dec ->
             "December"
+
+monthToNumString : Date.Month -> String
+monthToNumString month =
+    case month of
+        Date.Jan ->
+            "01"
+
+        Date.Feb ->
+            "02"
+
+        Date.Mar ->
+            "03"
+
+        Date.Apr ->
+            "04"
+
+        Date.May ->
+            "05"
+
+        Date.Jun ->
+            "06"
+
+        Date.Jul ->
+            "07"
+
+        Date.Aug ->
+            "08"
+
+        Date.Sep ->
+            "09"
+
+        Date.Oct ->
+            "10"
+
+        Date.Nov ->
+            "11"
+
+        Date.Dec ->
+            "12"
 
 
 dayToString : Date.Day -> String
@@ -124,3 +165,78 @@ stringToPostStatus str =
                     Debug.log "stringToPostStatus" <| "Error: unknown value passed: " ++ str
             in
                 Published
+
+
+{-| Assumes a forward slash for the directory/file
+separator.
+-}
+basepathPlusFile : String -> String -> String
+basepathPlusFile dir file =
+    let
+        fullpath =
+            case String.endsWith "/" dir of
+                True ->
+                    dir ++ file
+
+                False ->
+                    dir ++ "/" ++ file
+    in
+        fullpath
+
+
+replaceImages : Post -> String -> Model -> String
+replaceImages post imagesDirectory model =
+    let
+        getSourceFile : String -> Maybe String
+        getSourceFile idx =
+            let
+                index =
+                    case String.toInt idx of
+                        Ok i ->
+                            i
+
+                        Err s ->
+                            -100
+            in
+                case
+                    LE.getAt index post.images
+                of
+                    Just i ->
+                        Just i.sourceFile
+
+                    Nothing ->
+                        Nothing
+
+        getImg : String -> String
+        getImg idx =
+            case getSourceFile idx of
+                Just sf ->
+                    "<p><img src='"
+                        ++ (basepathPlusFile imagesDirectory sf)
+                        ++ "'></img></p>"
+
+                Nothing ->
+                    "<pre>Sorry, image " ++ idx ++ " was not found. Did you add it to the post?</pre>"
+    in
+        RX.replace RX.All
+            (RX.regex "<<(.*)>>")
+            (\match ->
+                let
+                    imgElement =
+                        case List.head match.submatches of
+                            Just idx ->
+                                case idx of
+                                    Just index ->
+                                        getImg index
+
+                                    Nothing ->
+                                        ""
+
+                            Nothing ->
+                                ""
+                in
+                    imgElement
+            )
+            post.body
+
+

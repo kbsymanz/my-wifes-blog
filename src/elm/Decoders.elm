@@ -8,7 +8,7 @@ import Json.Encode as JE
 
 -- LOCAL IMPORTS
 
-import Model exposing (Post, Image)
+import Model exposing (Post, Image, PublishPostResponse)
 import Utils as U
 
 
@@ -64,3 +64,15 @@ decodePosts payload =
 
         _ ->
             []
+
+
+publishPostResponse : JD.Decoder PublishPostResponse
+publishPostResponse =
+    JDP.decode PublishPostResponse
+        |> JDP.required "id" JD.int
+        |> JDP.required "success" JD.bool
+
+
+decodePublishPostResponse : JE.Value -> Result String PublishPostResponse
+decodePublishPostResponse payload =
+    JD.decodeValue publishPostResponse payload

@@ -74,8 +74,28 @@ const createImage = (sourceFile, id, prefix, width, imageDirectory, cb) => {
 };
 
 
+/* --------------------------------------------------------
+ * serverPublish()
+ *
+ * Pushes a post and it's images to a remote server via SSH
+ * and kicks off a trigger command at the end. Returns boolean
+ * success via the callback.
+ *
+ * param       postContent      - contents of the post
+ * param       postRemoteDir    - remote directory for the post
+ * param       imagesSrc        - array of image files, full paths
+ * param       imageRemoteDir   - remote directory for images
+ * param       triggerCmd       - command to run on the remote host
+ * param       cb               - callback, returns true or false
+ * return      
+ * -------------------------------------------------------- */
+const serverPublish = (postContent, postRemoteDir, imagesSrc, imageRemoteDir, triggerCmd, cb) => {
+  return cb(true);
+};
+
 module.exports = {
   createImage: createImage,
   createMasterImage: createMasterImage,
-  showOpenImageFileDialog: showOpenImageFileDialog
+  showOpenImageFileDialog: showOpenImageFileDialog,
+  serverPublish: serverPublish
 };

@@ -53,4 +53,6 @@ subscriptions model =
         [ Time.every Time.second Tick
         , Ports.updateImage Decoders.decodeImage
             |> Sub.map UpdateImage
+        , Ports.publishPostResponse Decoders.decodePublishPostResponse
+            |> Sub.map Msg.PublishPostResponseMsg
         ]

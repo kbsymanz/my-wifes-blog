@@ -5,9 +5,7 @@ import Dict exposing (Dict)
 import Html exposing (Html)
 import Html.Attributes as HA
 import Html.Events as HE
-import List.Extra as LE
 import Markdown as MD
-import Regex as RX
 import String
 
 
@@ -54,73 +52,16 @@ previewPost post model =
             , Html.div [ HA.class "post-publish" ]
                 [ Html.button
                     [ HA.class "pure-button"
-                    , HE.onClick <| PublishPost post.id
+                    , HE.onClick <| PublishPostMsg post.id
                     ]
                     [ Html.text "Publish" ]
                 , Html.div [ HA.class "post-meta-moddate" ]
                     [ Html.text <| U.displayDate post.mDate ]
                 ]
             ]
-        , MD.toHtml [ HA.class "post-contents" ] <| replaceImages post model
+        , MD.toHtml [ HA.class "post-contents" ]
+            <| U.replaceImages post model.config.imagesDirectory model
         ]
-
-
-replaceImages : Post -> Model -> String
-replaceImages post model =
-    let
-        getSourceFile : String -> Maybe String
-        getSourceFile idx =
-            let
-                index =
-                    case String.toInt idx of
-                        Ok i ->
-                            i
-
-                        Err s ->
-                            -100
-            in
-                case
-                    LE.getAt index post.images
-                of
-                    Just i ->
-                        Just i.sourceFile
-
-                    Nothing ->
-                        Nothing
-
-        getImg : String -> String
-        getImg idx =
-            case getSourceFile idx of
-                Just sf ->
-                    "<p><img src='"
-                        ++ model.config.imagesDirectory
-                        ++ "/"
-                        ++ sf
-                        ++ "'></img></p>"
-
-                Nothing ->
-                    "<pre>Sorry, image " ++ idx ++ " was not found. Did you add it to the post?</pre>"
-    in
-        RX.replace RX.All
-            (RX.regex "<<(.*)>>")
-            (\match ->
-                let
-                    imgElement =
-                        case List.head match.submatches of
-                            Just idx ->
-                                case idx of
-                                    Just index ->
-                                        getImg index
-
-                                    Nothing ->
-                                        ""
-
-                            Nothing ->
-                                ""
-                in
-                    imgElement
-            )
-            post.body
 
 
 view : Model -> Html Msg

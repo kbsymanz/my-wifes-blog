@@ -73,8 +73,13 @@
         });
       });
 
-      app.ports.publishPost.subscribe(function(id) {
-        console.log('Publishing ' + id);
+      app.ports.publishPost.subscribe(function(publishPost) {
+        var id = publishPost.id
+          , content = publishPost.content
+          ;
+        api.publish(id, content, function(success) {
+          app.ports.publishPostResponse.send({id: id, success: success});
+        });
       });
     </script>
   </body>

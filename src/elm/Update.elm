@@ -1,17 +1,30 @@
 module Update exposing (update)
 
-import Date
+import Date exposing (Date)
 import Dict exposing (Dict)
 import List.Extra as LE
+import Regex as RX
 import Task
 
 
 -- LOCAL IMPORTS
 
 import Encoders
-import Model exposing (Model, Author, Post, Id, Image, NextIds, ViewContent(..), PostStatus(..))
+import Model
+    exposing
+        ( Model
+        , Author
+        , Post
+        , Id
+        , Image
+        , NextIds
+        , PublishPost
+        , ViewContent(..)
+        , PostStatus(..)
+        )
 import Msg exposing (Msg(..))
 import Ports
+import Utils as U
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -49,6 +62,7 @@ update msg model =
                     case model.viewContent of
                         ViewPost ->
                             ViewPost
+
                         _ ->
                             EditPost
             in
@@ -356,8 +370,27 @@ update msg model =
                 { model | posts = newPosts, currentPost = newCurrentPost }
                     ! [ Ports.delPost <| Encoders.idToValue id ]
 
-        PublishPost id ->
-            model ! []
+        PublishPostMsg id ->
+            let
+                publishPost =
+                    genPublishPost id model
+
+                newCmd =
+                    case publishPost of
+                        Just p ->
+                            Ports.publishPost <| Encoders.encodePublishPost p
+
+                        Nothing ->
+                            Cmd.none
+            in
+                model ! [ newCmd ]
+
+        PublishPostResponseMsg publishPostResponse ->
+            let
+                _ =
+                    Debug.log "PublishPostResponse" <| toString publishPostResponse
+            in
+                model ! []
 
         UploadImage ->
             let
@@ -529,3 +562,58 @@ authorInPosts id model =
     Dict.filter (\_ post -> post.authorId == id) model.posts
         |> Dict.size
         |> flip (>=) 1
+
+
+getHeader : Post -> Model -> String
+getHeader post model =
+    let
+        -- YYYY-MM-DD as a String
+        getDate d =
+            (toString <| Date.year d)
+                ++ "-"
+                ++ (U.monthToNumString <| Date.month d)
+                ++ "-"
+                ++ (String.padLeft 2 '0' <| toString <| Date.day d)
+    in
+        "---\n"
+            ++ "title: "
+            ++ post.title
+            ++ "\n"
+            ++ "publishDate: "
+            ++ (getDate post.cDate)
+            ++ "\n"
+            ++ "modifiedDate: "
+            ++ (getDate post.mDate)
+            ++ "\n"
+            ++ "author: "
+            ++ (getAuthorName post model)
+            ++ "\n"
+            ++ "collection: posts\n"
+            ++ "template: post.jade\n"
+            ++ "---\n\n"
+
+
+getAuthorName : Post -> Model -> String
+getAuthorName post model =
+    case Dict.get post.authorId model.authors of
+        Just a ->
+            a.firstname ++ " " ++ a.lastname
+
+        Nothing ->
+            ""
+
+
+genPublishPost : Id -> Model -> Maybe PublishPost
+genPublishPost id model =
+    case Dict.get id model.posts of
+        Just p ->
+            let
+                header =
+                    getHeader p model
+            in
+                Just <|
+                    PublishPost id <|
+                        (header ++ U.replaceImages p "/images" model)
+
+        Nothing ->
+            Nothing
