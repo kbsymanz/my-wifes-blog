@@ -72,19 +72,19 @@ update msg model =
         SelectSettings ->
             { model | viewContent = EditSettings } ! [ clearMessage ]
 
-        ServerImagesPushCmd cmd ->
+        ServerImagesDirectory dir ->
             let
                 newConfig =
                     model.config
-                        |> \c -> { c | serverImagesPushCmd = cmd }
+                        |> \c -> { c | serverImagesDirectory = dir }
             in
                 { model | config = newConfig } ! []
 
-        ServerPostsPushCmd cmd ->
+        ServerPostsDirectory dir ->
             let
                 newConfig =
                     model.config
-                        |> \c -> { c | serverPostsPushCmd = cmd }
+                        |> \c -> { c | serverPostsDirectory = dir }
             in
                 { model | config = newConfig } ! []
 
@@ -125,6 +125,38 @@ update msg model =
                 newConfig =
                     model.config
                         |> \c -> { c | postTemplate = template }
+            in
+                { model | config = newConfig } ! []
+
+        SshHost host ->
+            let
+                newConfig =
+                    model.config
+                        |> \c -> { c | sshHost = host }
+            in
+                { model | config = newConfig } ! []
+
+        SshPort sshPort ->
+            let
+                newConfig =
+                    model.config
+                        |> \c -> { c | sshPort = sshPort }
+            in
+                { model | config = newConfig } ! []
+
+        SshUsername name ->
+            let
+                newConfig =
+                    model.config
+                        |> \c -> { c | sshUsername = name }
+            in
+                { model | config = newConfig } ! []
+
+        SshPrivateKey pk ->
+            let
+                newConfig =
+                    model.config
+                        |> \c -> { c | sshPrivateKey = pk }
             in
                 { model | config = newConfig } ! []
 
@@ -323,6 +355,9 @@ update msg model =
             in
                 { model | posts = newPosts, currentPost = newCurrentPost }
                     ! [ Ports.delPost <| Encoders.idToValue id ]
+
+        PublishPost id ->
+            model ! []
 
         UploadImage ->
             let

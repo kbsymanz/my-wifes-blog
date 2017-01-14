@@ -3,6 +3,8 @@ module Views.Settings exposing (view)
 import Html exposing (Html)
 import Html.Attributes as HA
 import Html.Events as HE
+import Result
+import String
 
 
 -- LOCAL IMPORTS
@@ -18,17 +20,17 @@ settingsForm model =
     Html.div [ HA.class "pure-g" ]
         [ Html.div [ HA.class "pure-u-1" ]
             [ Html.form [ HA.class "pure-form pure-form-stacked" ]
-                [ VU.textfieldString ServerImagesPushCmd
-                    model.config.serverImagesPushCmd
+                [ VU.textfieldString ServerImagesDirectory
+                    model.config.serverImagesDirectory
                     False
-                    "Command to push images to the server"
-                    "serverImagesPushCmdId"
+                    "Images directory on the server"
+                    "serverImagesDirectoryId"
                     "pure-input-1"
-                , VU.textfieldString ServerPostsPushCmd
-                    model.config.serverPostsPushCmd
+                , VU.textfieldString ServerPostsDirectory
+                    model.config.serverPostsDirectory
                     False
-                    "Command to push posts to the server"
-                    "serverPostsPushCmdId"
+                    "Posts directory on the server"
+                    "serverPostsDirectoryId"
                     "pure-input-1"
                 , VU.textfieldString ServerTriggerCmd
                     model.config.serverTriggerCmd
@@ -60,6 +62,31 @@ settingsForm model =
                     "Fill template for each post"
                     "postTemplateId"
                     "pure-input-1"
+                , VU.textfieldString SshHost
+                    model.config.sshHost
+                    False
+                    "SSH Host name"
+                    "sshHostId"
+                    "pure-input-1"
+                , VU.textfieldString SshPort
+                    model.config.sshPort
+                    False
+                    "SSH Port"
+                    "sshPortId"
+                    "pure-input-1"
+                , VU.textfieldString SshUsername
+                    model.config.sshUsername
+                    False
+                    "SSH User name"
+                    "sshUserId"
+                    "pure-input-1"
+                , VU.textfieldStringML SshPrivateKey
+                    model.config.sshPrivateKey
+                    False
+                    "SSH Private Key"
+                    "sshPrivateKeyId"
+                    "pure-input-1"
+                    20
                 ]
             ]
         ]

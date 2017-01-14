@@ -46,12 +46,21 @@ previewPost : Post -> Model -> Html Msg
 previewPost post model =
     Html.div
         []
-        [ Html.h2 [ HA.class "post-title" ]
-            [ Html.a []
-                [ Html.text post.title ]
+        [ Html.div [ HA.class "post-header" ]
+            [ Html.h2 [ HA.class "post-title" ]
+                [ Html.a []
+                    [ Html.text post.title ]
+                ]
+            , Html.div [ HA.class "post-publish" ]
+                [ Html.button
+                    [ HA.class "pure-button"
+                    , HE.onClick <| PublishPost post.id
+                    ]
+                    [ Html.text "Publish" ]
+                , Html.div [ HA.class "post-meta-moddate" ]
+                    [ Html.text <| U.displayDate post.mDate ]
+                ]
             ]
-        , Html.div [ HA.class "post-meta-moddate" ]
-            [ Html.text <| U.displayDate post.mDate ]
         , MD.toHtml [ HA.class "post-contents" ] <| replaceImages post model
         ]
 

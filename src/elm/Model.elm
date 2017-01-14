@@ -103,9 +103,9 @@ type alias Flags =
 {-| Configuration settings. Allow the user to control them.
 These settings will need to be saved in the app database.
 
-  serverImagesPushCmd: the OS command that pushes images to the server.
+  serverImagesDirectory: the remote directory where images are stored.
 
-  serverPostsPushCmd: the OS command that pushes posts to the server.
+  serverPostsDirectory: the remote directory where posts are stored.
 
   serverTriggerCmd: the OS command that pushes a file to the server
   that the server uses to know that it needs to regenerate the website.
@@ -119,15 +119,27 @@ These settings will need to be saved in the app database.
 
   postTemplate: the structure of the post file and variables that
   can be populated with actual data, e.g. title, date, author, etc.
+
+  sshHost: the SSH host name
+
+  sshPort: the SSH port
+
+  sshUsername: the SSH username
+
+  sshPrivateKey: the SSH private key. This is the key itself, not the file name.
 -}
 type alias Config =
-    { serverImagesPushCmd : String
-    , serverPostsPushCmd : String
+    { serverImagesDirectory : String
+    , serverPostsDirectory : String
     , serverTriggerCmd : String
     , postsDirectory : String
     , imagesDirectory : String
     , postCss : String
     , postTemplate : String
+    , sshHost : String
+    , sshPort : String
+    , sshUsername : String
+    , sshPrivateKey : String
     }
 
 
@@ -145,13 +157,17 @@ type alias Id =
 
 config : Config
 config =
-    { serverImagesPushCmd = ""
-    , serverPostsPushCmd = ""
+    { serverImagesDirectory = ""
+    , serverPostsDirectory = ""
     , serverTriggerCmd = ""
     , postsDirectory = ""
     , imagesDirectory = ""
     , postCss = ""
     , postTemplate = ""
+    , sshHost = ""
+    , sshPort = "22"
+    , sshUsername = ""
+    , sshPrivateKey = ""
     }
 
 

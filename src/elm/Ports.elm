@@ -42,3 +42,6 @@ port delPost : JE.Value -> Cmd msg
 
 
 port uploadImage : JE.Value -> Cmd msg
+
+
+port publishPost : JE.Value -> Cmd msg

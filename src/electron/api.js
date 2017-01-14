@@ -17,13 +17,17 @@ const getConfig = () => {
   // Need to return an accurate empty representation
   // so that Elm does not blow up.
   return {
-    serverImagesPushCmd: "",
-    serverPostsPushCmd: "",
+    serverImagesDirectory: "",
+    serverPostsDirectory: "",
     serverTriggerCmd: "",
     postsDirectory: "",
     imagesDirectory: "",
     postCss: "",
-    postTemplate: ""
+    postTemplate: "",
+    sshHost: "",
+    sshPort: "22",
+    sshUsername: "",
+    sshPrivateKey: ""
   };
 };
 

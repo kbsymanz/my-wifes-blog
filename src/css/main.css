@@ -136,3 +136,13 @@
 .image-box-even {
   /* background-color: #009688; */
 }
+
+/* Preview controls */
+.post-header {
+  position: relative;
+}
+.post-publish .pure-button {
+  position: absolute;
+  right: 0;
+  top: 0.5em;
+}

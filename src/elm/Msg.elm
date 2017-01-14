@@ -19,13 +19,17 @@ type Msg
     | EditAuthors
     | SelectSettings
       -- Configuration settings.
-    | ServerImagesPushCmd String
-    | ServerPostsPushCmd String
+    | ServerImagesDirectory String
+    | ServerPostsDirectory String
     | ServerTriggerCmd String
     | PostsDirectory String
     | ImagesDirectory String
     | PostCss String
     | PostTemplate String
+    | SshHost String
+    | SshPort String
+    | SshUsername String
+    | SshPrivateKey String
     | SaveSettings
       -- Author.
     | AuthorFirstname String
@@ -42,6 +46,7 @@ type Msg
     | SavePost
     | NewPost
     | DelPost Int
+    | PublishPost Int
       -- Images
     | UploadImage
     | UpdateImage (Result String Image)

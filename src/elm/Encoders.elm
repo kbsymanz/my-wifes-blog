@@ -13,13 +13,17 @@ import Utils as U
 configToValue : Config -> JE.Value
 configToValue cfg =
     JE.object
-        [ ( "serverImagesPushCmd", JE.string cfg.serverImagesPushCmd )
-        , ( "serverPostsPushCmd", JE.string cfg.serverPostsPushCmd )
+        [ ( "serverImagesDirectory", JE.string cfg.serverImagesDirectory )
+        , ( "serverPostsDirectory", JE.string cfg.serverPostsDirectory )
         , ( "serverTriggerCmd", JE.string cfg.serverTriggerCmd )
         , ( "postsDirectory", JE.string cfg.postsDirectory )
         , ( "imagesDirectory", JE.string cfg.imagesDirectory )
         , ( "postCss", JE.string cfg.postCss )
         , ( "postTemplate", JE.string cfg.postTemplate )
+        , ( "sshHost", JE.string cfg.sshHost )
+        , ( "sshPort", JE.string cfg.sshPort )
+        , ( "sshUsername", JE.string cfg.sshUsername )
+        , ( "sshPrivateKey", JE.string cfg.sshPrivateKey )
         ]
 
 

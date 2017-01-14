@@ -72,6 +72,10 @@
           if (image) app.ports.updateImage.send(image);
         });
       });
+
+      app.ports.publishPost.subscribe(function(id) {
+        console.log('Publishing ' + id);
+      });
     </script>
   </body>
 </html>
