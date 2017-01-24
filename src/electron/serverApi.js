@@ -9,7 +9,8 @@ const { dialog } = require('electron');
 const fs = require('fs');
 const path = require('path');
 const jimp = require('jimp');
-
+const _ = require('underscore');
+const SSHClient = require('ssh2').Client;
 
 const showOpenImageFileDialog = (startingPath='', multi=false) => {
   var properties = ['openFile'];
@@ -81,16 +82,105 @@ const createImage = (sourceFile, id, prefix, width, imageDirectory, cb) => {
  * and kicks off a trigger command at the end. Returns boolean
  * success via the callback.
  *
+ * param       sshHost          - the host of the SSH server
+ * param       sshPort          - the port of the SSH server
+ * param       sshUser          - the ssh username
+ * param       sshPK            - the private key for the SSH connection
+ * param       id               - the id of the post
  * param       postContent      - contents of the post
  * param       postRemoteDir    - remote directory for the post
  * param       imagesSrc        - array of image files, full paths
  * param       imageRemoteDir   - remote directory for images
  * param       triggerCmd       - command to run on the remote host
- * param       cb               - callback, returns true or false
+ * param       cb               - callback, Nodejs style with boolean success as 2nd parameter
  * return      
  * -------------------------------------------------------- */
-const serverPublish = (postContent, postRemoteDir, imagesSrc, imageRemoteDir, triggerCmd, cb) => {
-  return cb(true);
+const serverPublish = (sshHost, sshPort, sshUser, sshPK, id, postContent, postRemoteDir, imagesSrc, imageRemoteDir, triggerCmd, cb) => {
+  var success = false;
+  var port = parseInt(sshPort, 10);
+  var sshConfig = {
+    host: sshHost,
+    port: port,
+    username: sshUser,
+    privateKey: sshPK,
+    //debug: function(err) {console.log(err);}
+  };
+
+  var conn = new SSHClient();
+  conn.on('ready', function() {
+    conn.sftp(function(err, sftp) {
+      if (err) throw err;
+      const numImages = imagesSrc.length;
+      var imagesDone = 0;
+
+      // --------------------------------------------------------
+      // Send the images to the server.
+      // --------------------------------------------------------
+      _.each(imagesSrc, (image) => {
+        sftp.fastPut(image, path.join(imageRemoteDir, path.basename(image)), (err) => {
+          if (err) console.log('Error with ' + image + ': ' + err);
+          imagesDone++;
+          if (imagesDone === numImages) {
+            console.log('Finished sending ' + numImages + ' images to the server.');
+
+            // --------------------------------------------------------
+            // Send the post to the server, overwriting any existing
+            // post with the same id.
+            // --------------------------------------------------------
+            const remoteFullPostPath = path.join(postRemoteDir, "Post-" + id + ".md");
+            sftp.open(remoteFullPostPath, "w", function(err, postBufferHandle) {
+              if (err) {
+                console.log('Error with open for post: ' + err);
+                return cb(err, false);
+              }
+              const postBuffer = Buffer.from(postContent);
+              sftp.write(postBufferHandle, postBuffer, 0, postBuffer.length, 0, function(err) {
+                if (err) {
+                  console.log('Error with write for post: ' + err);
+                  return cb(err, false);
+                }
+                sftp.close(postBufferHandle, function(err) {
+                  if (err) {
+                    console.log('Error with close for post: ' + err);
+                    return cb(err, false);
+                  }
+
+                  // --------------------------------------------------------
+                  // Execute the trigger command on the server.
+                  // --------------------------------------------------------
+                  conn.exec(triggerCmd, function(err, stream) {
+                    stream.on('close', function(code, signal) {
+                      conn.end();
+
+                      // --------------------------------------------------------
+                      // Return via callback to the caller.
+                      // --------------------------------------------------------
+                      if (code === 0) success = true;
+                      return cb(null, success);
+                    })
+                    .on('data', function(data) {
+                      console.log('STDOUT: ' + data);
+                    })
+                    .stderr.on('data', function(data) {
+                      console.log('STDERR: ' + data);
+                    });
+                  });
+                });
+              });
+            });
+          }
+        });
+      });
+    });
+  })
+  .on('error', function(err) {
+    console.log('----------------- ERROR -------------------------');
+    console.log(err);
+    console.log('----------------- ERROR -------------------------');
+    return cb(null, false);
+  })
+  .connect(sshConfig);
+
 };
 
 module.exports = {

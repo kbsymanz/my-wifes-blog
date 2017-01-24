@@ -76,8 +76,10 @@
       app.ports.publishPost.subscribe(function(publishPost) {
         var id = publishPost.id
           , content = publishPost.content
+          , images = publishPost.images
+          , config = publishPost.config
           ;
-        api.publish(id, content, function(success) {
+        api.publish(id, content, images, config, function(success) {
           app.ports.publishPostResponse.send({id: id, success: success});
         });
       });

@@ -92,6 +92,8 @@ type PostStatus
 type alias PublishPost =
     { id : Id
     , content : String
+    , images : List String
+    , config : Config
     }
 
 

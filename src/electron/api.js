@@ -1,5 +1,6 @@
 const path = require('path');
 const { remote } = require('electron');
+const _ = require('underscore');
 const {
   createImage,
   createMasterImage,
@@ -171,13 +172,45 @@ const uploadImage = (id, cb) => {
   return cb(void 0);
 };
 
-const publish = (id, postContent, cb) => {
-  // TODO:
-  // 3. Gather full path references for all images into an array.
-  // 4. Get remote paths for post and images
-  // 5. Get the trigger command.
-  return cb(true);
+/* --------------------------------------------------------
+ * publish()
+ *
+ * All of the work is done on the server side so we are just
+ * a pass through.
+ *
+ * param       id               - the post id
+ * param       postContent      - the content of the Metalsmith post file
+ * param       images           - an array of images used
+ * param       config           - the client configuration
+ * param       cb               - callback with single boolean success as parameter
+ * return
+ * -------------------------------------------------------- */
+const publish = (id, postContent, images, config, cb) => {
+  var fullImages = _.map(images, (i) => {
+    return path.join(config.imagesDirectory, i);
+  });
 
+  serverPublish(
+    config.sshHost,
+    config.sshPort,
+    config.sshUsername,
+    config.sshPrivateKey,
+    id,
+    postContent,
+    config.serverPostsDirectory,
+    fullImages,
+    config.serverImagesDirectory,
+    config.serverTriggerCmd,
+    function(err, result) {
+      if (err) {
+        // Log the error to the console.
+        // TODO: consider returning error to Elm client for handling
+        // and interacting with user.
+        console.log(err);
+        return cb(false);
+      }
+      return cb(true);
+  });
 };
 
 module.exports = {

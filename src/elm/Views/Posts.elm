@@ -53,14 +53,18 @@ previewPost post model =
                 [ Html.button
                     [ HA.class "pure-button"
                     , HE.onClick <| PublishPostMsg post.id
+                    , if model.isSyncing then
+                        HA.disabled True
+                      else
+                        HA.disabled False
                     ]
                     [ Html.text "Publish" ]
                 , Html.div [ HA.class "post-meta-moddate" ]
                     [ Html.text <| U.displayDate post.mDate ]
                 ]
             ]
-        , MD.toHtml [ HA.class "post-contents" ]
-            <| U.replaceImages post model.config.imagesDirectory model
+        , MD.toHtml [ HA.class "post-contents" ] <|
+            U.replaceImages post model.config.imagesDirectory model
         ]
 
 

@@ -375,22 +375,42 @@ update msg model =
                 publishPost =
                     genPublishPost id model
 
-                newCmd =
+                newCmds =
                     case publishPost of
                         Just p ->
-                            Ports.publishPost <| Encoders.encodePublishPost p
+                            [ Ports.publishPost <| Encoders.encodePublishPost p
+                            , setMessage "Sending post to server...it takes a while."
+                            ]
 
                         Nothing ->
-                            Cmd.none
+                            [ Cmd.none ]
             in
-                model ! [ newCmd ]
+                { model | isSyncing = True } ! newCmds
 
         PublishPostResponseMsg publishPostResponse ->
             let
                 _ =
                     Debug.log "PublishPostResponse" <| toString publishPostResponse
+
+                newCmd =
+                    case publishPostResponse of
+                        Ok ppr ->
+                            if ppr.success then
+                                setMessage
+                                    <| "Successfully published post "
+                                        ++ (toString ppr.id)
+                                        ++ " to the server."
+                            else
+                                setMessage
+                                    <| "There was an error publishing post "
+                                        ++ (toString ppr.id)
+                                        ++ " to the server."
+                        Err str ->
+                            setMessage
+                                <| "Error encountered: "
+                                    ++ str
             in
-                model ! []
+                { model | isSyncing = False } ! [ newCmd ]
 
         UploadImage ->
             let
@@ -612,8 +632,10 @@ genPublishPost id model =
                     getHeader p model
             in
                 Just <|
-                    PublishPost id <|
+                    PublishPost id
                         (header ++ U.replaceImages p "/images" model)
+                        (List.map .sourceFile p.images)
+                        model.config
 
         Nothing ->
             Nothing

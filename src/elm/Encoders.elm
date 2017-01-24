@@ -103,4 +103,6 @@ encodePublishPost publishPost =
     JE.object
         [ ( "id", JE.int publishPost.id )
         , ( "content", JE.string publishPost.content )
+        , ( "images" , JE.list <| List.map JE.string publishPost.images )
+        , ( "config", configToValue publishPost.config )
         ]
