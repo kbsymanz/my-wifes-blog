@@ -4,9 +4,6 @@ import Date exposing (Date)
 import Dict exposing (Dict)
 import Html exposing (Html)
 import List.Extra as LE
-import Material
-import Material.Options as Options
-import Material.Textfield as Textfield
 import Regex as RX
 
 

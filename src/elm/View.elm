@@ -24,7 +24,7 @@ view : Model -> Html Msg
 view model =
     Html.div [ HA.class "pure-g" ]
         [ Html.div [ HA.class "pure-u-1" ]
-            [ headerSmall "Blog Manager" model ]
+            [ headerSmall "My Wife's Blog" model ]
         , Html.div [ HA.class "pure-u-1 one-box" ]
             [ viewMain model ]
         ]

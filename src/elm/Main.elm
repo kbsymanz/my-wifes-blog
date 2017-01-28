@@ -2,8 +2,6 @@ module Main exposing (..)
 
 import Dict exposing (Dict)
 import Html
-import Material
-import Material.Layout as Layout
 import Time
 
 

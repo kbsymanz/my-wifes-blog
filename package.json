@@ -1,19 +1,17 @@
 {
-  "name": "md_manager",
+  "name": "my-wifes-blog",
   "version": "1.0.0",
-  "description": "Manage markdown files for a static web site.",
+  "description": "An app for my wife to update the blog.",
   "main": "src/electron/main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Kurt Symanzik",
   "license": "MIT",
-  "devDependencies": {
-    "electron": "^1.4.10"
-  },
   "dependencies": {
     "jimp": "^0.2.27",
     "ssh2": "^0.5.4",
-    "underscore": "^1.8.3"
+    "underscore": "^1.8.3",
+    "electron": "^1.4.10"
   }
 }
