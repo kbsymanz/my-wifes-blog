@@ -114,65 +114,33 @@ const serverPublish = (sshHost, sshPort, sshUser, sshPK, id, postContent, postRe
       var imagesDone = 0;
 
       // --------------------------------------------------------
-      // Send the images to the server.
+      // Send the images to the server, which will likely be
+      // processed in parallel.
       // --------------------------------------------------------
       _.each(imagesSrc, (image) => {
-        sftp.fastPut(image, path.join(imageRemoteDir, path.basename(image)), (err) => {
-          if (err) console.log('Error with ' + image + ': ' + err);
+        sendImage(sftp, image, id, imageRemoteDir, () => {
           imagesDone++;
-          if (imagesDone === numImages) {
-            console.log('Finished sending ' + numImages + ' images to the server.');
-
-            // --------------------------------------------------------
-            // Send the post to the server, overwriting any existing
-            // post with the same id.
-            // --------------------------------------------------------
-            const remoteFullPostPath = path.join(postRemoteDir, "Post-" + id + ".md");
-            sftp.open(remoteFullPostPath, "w", function(err, postBufferHandle) {
-              if (err) {
-                console.log('Error with open for post: ' + err);
-                return cb(err, false);
-              }
-              const postBuffer = Buffer.from(postContent);
-              sftp.write(postBufferHandle, postBuffer, 0, postBuffer.length, 0, function(err) {
-                if (err) {
-                  console.log('Error with write for post: ' + err);
-                  return cb(err, false);
-                }
-                sftp.close(postBufferHandle, function(err) {
-                  if (err) {
-                    console.log('Error with close for post: ' + err);
-                    return cb(err, false);
-                  }
-
-                  // --------------------------------------------------------
-                  // Execute the trigger command on the server.
-                  // --------------------------------------------------------
-                  conn.exec(triggerCmd, function(err, stream) {
-                    stream.on('close', function(code, signal) {
-                      conn.end();
-
-                      // --------------------------------------------------------
-                      // Return via callback to the caller.
-                      // --------------------------------------------------------
-                      if (code === 0) success = true;
-                      return cb(null, success);
-                    })
-                    .on('data', function(data) {
-                      console.log('STDOUT: ' + data);
-                    })
-                    .stderr.on('data', function(data) {
-                      console.log('STDERR: ' + data);
-                    });
-                  });
-                });
-              });
-            });
-          }
         });
       });
-    });
-  })
+
+      // --------------------------------------------------------
+      // Send the post to the server, overwriting any existing
+      // post with the same id, after all of the images have been sent.
+      // --------------------------------------------------------
+      const remoteFullPostPath = path.join(postRemoteDir, "Post-" + id + ".md");
+      const intervalId = setInterval(() => {
+        if (imagesDone === numImages) {
+          console.log('Sending post');
+          sendPost(conn, sftp, remoteFullPostPath, postContent, triggerCmd, (err, success) => {
+            if (! success && err) console.log(err);
+            clearInterval(intervalId);
+            cb(err, success);
+          });
+        }
+      }, 2000);
+
+    });           // conn.sftp()
+  })              // conn.on()
   .on('error', function(err) {
     console.log('----------------- ERROR -------------------------');
     console.log(err);
@@ -180,7 +148,85 @@ const serverPublish = (sshHost, sshPort, sshUser, sshPK, id, postContent, postRe
     return cb(null, false);
   })
   .connect(sshConfig);
+};  // serverPublish()
 
+
+/* --------------------------------------------------------
+ * sendImage()
+ *
+ * Sends an image up to the server. Calls callback at end.
+ *
+ * param        sftp
+ * param        image
+ * param        id
+ * param        imageRemoteDir
+ * param        cb
+ * return       undefined
+ * -------------------------------------------------------- */
+const sendImage = (sftp, image, id, imageRemoteDir, cb) => {
+  console.log('Starting send of ' + image);
+  sftp.fastPut(image, path.join(imageRemoteDir, path.basename(image)), (err) => {
+    if (err) console.log('Error with ' + image + ': ' + err);
+    console.log('Finished sending ' + image);
+    cb();
+  });
+};
+
+
+/* --------------------------------------------------------
+ * sendPost()
+ *
+ * Sends the post to the server. Calls callback when done.
+ *
+ * param        conn
+ * param        sftp
+ * param        remoteFullPostPath
+ * param        postContent
+ * param        triggerCmd
+ * param        cb
+ * return       undefined
+ * -------------------------------------------------------- */
+const sendPost = (conn, sftp, remoteFullPostPath, postContent, triggerCmd, cb) => {
+  sftp.open(remoteFullPostPath, "w", function(err, postBufferHandle) {
+    if (err) {
+      console.log('Error with open for post: ' + err);
+      return cb(err, false);
+    }
+    const postBuffer = Buffer.from(postContent);
+    sftp.write(postBufferHandle, postBuffer, 0, postBuffer.length, 0, function(err) {
+      if (err) {
+        console.log('Error with write for post: ' + err);
+        return cb(err, false);
+      }
+      sftp.close(postBufferHandle, function(err) {
+        if (err) {
+          console.log('Error with close for post: ' + err);
+          return cb(err, false);
+        }
+
+        // --------------------------------------------------------
+        // Execute the trigger command on the server.
+        // --------------------------------------------------------
+        conn.exec(triggerCmd, function(err, stream) {
+          stream.on('close', function(code, signal) {
+            conn.end();
+
+            // --------------------------------------------------------
+            // Return via callback to the caller.
+            // --------------------------------------------------------
+            if (code === 0) success = true;
+            return cb(null, success);
+          })
+          .on('data', function(data) {
+            console.log('STDOUT: ' + data);
+          })
+          .stderr.on('data', function(data) {
+            console.log('STDERR: ' + data);
+          });
+        });   // conn.exec()
+      });     // sftp.close()
+    });       // sftp.write()
+  });         // sftp.open()
 };
 
 module.exports = {
