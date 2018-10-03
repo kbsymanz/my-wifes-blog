@@ -9,9 +9,9 @@
   "author": "Kurt Symanzik",
   "license": "MIT",
   "dependencies": {
+    "electron": "^1.4.10",
     "jimp": "^0.2.27",
-    "ssh2": "^0.5.4",
     "underscore": "^1.8.3",
-    "electron": "^1.4.10"
+    "ssh2": "^0.6.1"
   }
 }
